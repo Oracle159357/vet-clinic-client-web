@@ -36,3 +36,61 @@
     transform: rotate(360deg);
   }
 }
+
+.table-center{
+  border: 5px solid gray;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-center td {
+  text-align: center;
+}
+
+.pages-size-center{
+  display: flex;
+  justify-content: center;
+}
+
+.pages-size-center span {
+  margin: 10px;
+}
+
+.transparent-button {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  margin: 10px;
+  font-size: 1.25em;
+}
+
+.table-no-data{
+  background-color: gray;
+}
+
+.number-table-filter input {
+  max-width: 70px;
+}
+.date-table-filter input {
+  max-width: 132px;
+}
+
+.table-header h1 {
+  margin-left: 5px;
+}
+.table-header .table-header-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.table-header .table-header-buttons button {
+  height: 26px;
+}
