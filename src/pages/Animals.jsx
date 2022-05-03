@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import { Form, Formik } from 'formik';
+import * as Yup from 'yup';
 import {
   addFromData2, changeFromData2, deleteFromData2ByIds, getData2,
 } from '../api';
@@ -7,51 +9,50 @@ import Table from '../Table';
 import { useCustomButton, useData } from './hooks';
 import { useModal, Modal } from './modal';
 import './People.css';
+import { MyInput } from './customFormikComponent';
 
 function AnimalForm({
   initialData,
   onSubmit,
 }) {
-  const [height, setHeight] = useState(initialData.height);
-  const [dogName, setDogName] = useState(initialData.dogName);
-  const [date, setDate] = useState(initialData.date);
   return (
-    <form onSubmit={(event) => {
-      event.preventDefault();
-      onSubmit({
-        ...initialData, dogName, height, date,
-      });
-    }}
+    <Formik
+      initialValues={{
+        dogName: initialData.dogName,
+        height: initialData.height,
+        date: initialData.date,
+      }}
+      validationSchema={Yup.object({
+        dogName: Yup.string()
+          .max(10, 'Must be 10 characters or less')
+          .required('Required'),
+        height: Yup.number().required().positive().integer(),
+      })}
+      onSubmit={(values) => {
+        onSubmit({
+          ...initialData, ...values,
+        });
+      }}
     >
-      <div>
-        <span>Name: </span>
-        <input
-          type="text"
+      <Form>
+        <MyInput
+          label="Dog name: "
           name="dogName"
-          value={dogName}
-          onChange={(e) => setDogName(e.target.value)}
-        />
-      </div>
-      <div>
-        <span>Height: </span>
-        <input
           type="text"
+        />
+        <MyInput
+          label="Height: "
           name="height"
-          value={height}
-          onChange={(e) => setHeight(+e.target.value)}
+          type="number"
         />
-      </div>
-      <div>
-        <span>Birthdate: </span>
-        <input
-          id="date"
+        <MyInput
+          label="Date: "
+          name="date"
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
         />
-      </div>
-      <input className={`button-submit ${!dogName ? 'disabled' : ''}`} type="submit" disabled={!dogName} />
-    </form>
+        <button className="button-submit" type="submit">Submit</button>
+      </Form>
+    </Formik>
   );
 }
 AnimalForm.defaultProps = {

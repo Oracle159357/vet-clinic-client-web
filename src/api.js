@@ -159,7 +159,15 @@ export async function deleteFromData2ByIds(ids) {
 }
 
 export async function addFromData1(data) {
-  addFromDataPerson(data1, data);
+  const findDuplicateName = data1.findIndex((person) => person.name === data.name);
+  if (findDuplicateName >= 0) {
+    return {
+      errors: {
+        name: 'This name already exists',
+      },
+    };
+  }
+  return addFromDataPerson(data1, data);
 }
 
 export async function changeFromData1(data) {

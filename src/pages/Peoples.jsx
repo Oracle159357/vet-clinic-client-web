@@ -1,52 +1,69 @@
 import React, { useMemo, useState } from 'react';
+import * as Yup from 'yup';
 import './People.css';
 import PropTypes from 'prop-types';
+import { Formik, Form } from 'formik';
 import {
   getData1, deleteFromData1ByIds, addFromData1, changeFromData1,
 } from '../api';
 import Table from '../Table';
 import { useCustomButton, useData } from './hooks';
 import { useModal, Modal } from './modal';
+import { MyInput, MyCheckbox } from './customFormikComponent';
 
 function PeopleForm({
   initialData,
   onSubmit,
 }) {
-  const [married, setMarried] = useState(initialData.married);
-  const [name, setName] = useState(initialData.name);
-  const [date, setDate] = useState(initialData.date);
   return (
-    <form onSubmit={(event) => {
-      event.preventDefault();
-      onSubmit({
-        ...initialData, name, married, date,
-      });
-    }}
+    <Formik
+      initialValues={{
+        name: initialData.name,
+        married: initialData.married,
+        date: initialData.date,
+      }}
+      validationSchema={Yup.object({
+        name: Yup.string()
+          .max(10, 'Must be 10 characters or less')
+          .required('Required'),
+        // married: Yup.boolean()
+        //   .required('Required')
+        //   .oneOf([true], 'You must accept the terms and conditions.'),
+      })}
+      onSubmit={async (values, actions) => {
+        const res = await onSubmit({
+          ...initialData, ...values,
+        });
+        if (res) {
+          actions.setSubmitting(false);
+          actions.setStatus({
+            name: res.errors.name,
+          });
+        }
+      }}
     >
-      <div>
-        <span>Name: </span>
-        <input
+      <Form>
+        <MyInput
+          label="Name: "
+          name="name"
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
         />
-      </div>
-      <div>
-        <span>Married: </span>
-        <input type="checkbox" checked={married} onChange={() => setMarried(!married)} />
-      </div>
-      <div>
-        <span>Birthdate: </span>
-        <input
+        <MyCheckbox
+          name="married"
+        >
+          Married:
+        </MyCheckbox>
+        <MyInput
+          label="Date: "
+          name="date"
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
         />
-      </div>
-      <input className={`button-submit ${!name ? 'disabled' : ''}`} type="submit" disabled={!name} />
-    </form>
+        <button className="button-submit" type="submit">Submit</button>
+      </Form>
+    </Formik>
   );
 }
+
 PeopleForm.defaultProps = {
   initialData: { name: '', married: false, date: '2022-08-03' },
 };
@@ -98,9 +115,12 @@ function Peoples() {
   });
   const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, data) => {
-      await addFromData1(data);
-      setChecked(new Set());
-      toggleAddModal();
+      const result = await addFromData1(data);
+      if (!(result && result.errors)) {
+        setChecked(new Set());
+        toggleAddModal();
+      }
+      return result;
     },
     checked,
     refreshData,
@@ -147,7 +167,14 @@ function Peoples() {
             <button type="button" className="button-default" onClick={onDeleteClick}>Delete columns</button>
             <button type="button" className="button-default" onClick={onAlertClick}>Alert columns</button>
             <button type="button" className="button-default" onClick={toggleAddModal}>Add People</button>
-            <button type="button" className={`button-default ${checked.size !== 1 ? 'disabled' : ''}`} disabled={checked.size !== 1} onClick={toggleChangeModal}>Change People</button>
+            <button
+              type="button"
+              className={`button-default ${checked.size !== 1 ? 'disabled' : ''}`}
+              disabled={checked.size !== 1}
+              onClick={toggleChangeModal}
+            >
+              Change People
+            </button>
           </div>
         </div>
         <Table

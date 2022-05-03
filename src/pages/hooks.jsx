@@ -19,8 +19,9 @@ export function useData({ getData }) {
 
 export function useCustomButton({ action, checked, refreshData }) {
   const onClick = async (arg) => {
-    await action(checked, arg);
+    const result = await action(checked, arg);
     refreshData();
+    return result;
   };
 
   return { onClick };
