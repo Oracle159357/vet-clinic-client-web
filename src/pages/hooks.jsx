@@ -17,6 +17,26 @@ export function useData({ getData }) {
   };
 }
 
+export function useDataV2({ getData }) {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(undefined);
+  const [pageCount, setPageCount] = useState(0);
+  const refreshDataWithNewOptions = useCallback(({ pageSize, pageIndex, sortBy }) => {
+    setLoading(true);
+    getData({ paging: { page: pageIndex, size: pageSize }, sorting: sortBy }).then((info) => {
+      setData(info.resultData);
+      setPageCount(Math.ceil(info.dataLength / pageSize));
+      setLoading(false);
+    });
+  }, [getData]);
+  return {
+    refreshDataWithNewOptions,
+    pageCount,
+    loading,
+    data,
+  };
+}
+
 export function useCustomButton({ action, checked, refreshData }) {
   const onClick = async (arg) => {
     const result = await action(checked, arg);

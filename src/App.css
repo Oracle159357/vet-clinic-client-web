@@ -94,3 +94,23 @@
 .table-header .table-header-buttons button {
   height: 26px;
 }
+
+.pagination-center{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.table-width{
+  width:100%;
+  table-layout: fixed;
+  overflow-wrap: break-word;
+  border: 5px solid gray;
+}
+
+.select-center{
+  width: 20%;
+  margin-left: 40%;
+  text-align: center;
+  margin-top: 1%;
+}

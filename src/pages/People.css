@@ -75,3 +75,12 @@ button {
 .error{
     color:red;
 }
+
+.text-cell-left{
+    text-align: left;
+}
+
+.text-cell-center{
+    text-align: center;
+}
+

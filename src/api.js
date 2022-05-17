@@ -20,7 +20,6 @@ const generateData2 = (size) => new Array(size).fill(0).map(() => ({
 function process(data, options) {
   const { filters, sorting, paging } = options;
   let filteredData;
-  console.log(options);
   if (filters !== undefined && Object.keys(filters).length !== 0) {
     const allFilter = Object.entries(filters);
     filteredData = data.filter((el) => allFilter.every(([key, { valueFilter, type }]) => {
@@ -54,11 +53,11 @@ function process(data, options) {
     filteredData = data;
   }
   let sortedData;
-  if (sorting !== undefined) {
+  if (sorting !== undefined && sorting.length !== 0) {
     sortedData = _.orderBy(
       filteredData,
-      sorting.map((x) => x.key),
-      sorting.map((x) => x.direction),
+      sorting.map((x) => x.id),
+      sorting.map((x) => (x.desc ? 'desc' : 'asc')),
     );
   } else {
     sortedData = filteredData;
