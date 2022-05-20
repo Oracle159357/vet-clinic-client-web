@@ -21,9 +21,13 @@ export function useDataV2({ getData }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(undefined);
   const [pageCount, setPageCount] = useState(0);
-  const refreshDataWithNewOptions = useCallback(({ pageSize, pageIndex, sortBy }) => {
+  const refreshDataWithNewOptions = useCallback(({
+    pageSize, pageIndex, sortBy, filters,
+  }) => {
     setLoading(true);
-    getData({ paging: { page: pageIndex, size: pageSize }, sorting: sortBy }).then((info) => {
+    getData({
+      paging: { page: pageIndex, size: pageSize }, sorting: sortBy, filters,
+    }).then((info) => {
       setData(info.resultData);
       setPageCount(Math.ceil(info.dataLength / pageSize));
       setLoading(false);

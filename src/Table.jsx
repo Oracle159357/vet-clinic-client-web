@@ -100,7 +100,6 @@ function Table({
   }, [controlledChecked]);
 
   const onFilterChange = (nameOfColumn, type, value) => {
-    console.log(nameOfColumn, value);
     setFiltersByColumnName({
       ...filtersByColumnName,
       [nameOfColumn]: { ...filtersByColumnName[nameOfColumn], valueFilter: value, type },

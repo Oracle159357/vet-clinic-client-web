@@ -17,17 +17,61 @@ const generateData2 = (size) => new Array(size).fill(0).map(() => ({
   birthDate: faker.date.past(20, '2020-01-01T00:00:00.000Z'),
 }));
 
+const baseTypeOfColumn = {
+  name: 'string',
+  age: 'number',
+  married: 'boolean',
+  birthDate: 'date',
+};
+
 function process(data, options) {
   const { filters, sorting, paging } = options;
+  console.log(filters);
   let filteredData;
-  if (filters !== undefined && Object.keys(filters).length !== 0) {
+  if (Array.isArray(filters)) {
+    if (filters !== undefined && filters.length !== 0) {
+      const allFilter = filters;
+      filteredData = data.filter((el) => allFilter.every(({ value, id }) => {
+        const currentValue = el[id];
+        const typeOfColumn = baseTypeOfColumn[id];
+        if (typeOfColumn === 'boolean') {
+          const booleanLabels = { true: true, false: false };
+          return value === 'null' ? true : currentValue === booleanLabels[value];
+        }
+        if (typeOfColumn === 'number') {
+          const isFromValid = value.from === undefined
+            || parseInt(value.from, 10) <= currentValue;
+          const isToValid = value.to === undefined
+            || currentValue <= parseInt(value.to, 10);
+
+          return isFromValid && isToValid;
+        }
+        if (typeOfColumn === 'string') {
+          return currentValue.toLowerCase().includes(value.toLowerCase());
+        }
+        if (typeOfColumn === 'date') {
+          const isFromValid = value.from === undefined
+            || new Date(value.from) <= currentValue;
+          const isToValid = value.to === undefined
+            || currentValue <= new Date(value.to);
+
+          return isFromValid && isToValid;
+          // return currentValue.toLowerCase().includes(valueFilter.toLowerCase());
+        }
+        throw new Error('Not supported data type');
+      }));
+    } else {
+      filteredData = data;
+    }
+  } else if (filters !== undefined && Object.keys(filters).length !== 0) {
     const allFilter = Object.entries(filters);
-    filteredData = data.filter((el) => allFilter.every(([key, { valueFilter, type }]) => {
+    filteredData = data.filter((el) => allFilter.every(([key, { valueFilter }]) => {
       const currentValue = el[key];
-      if (type === 'boolean') {
+      const typeOfColumn = baseTypeOfColumn[key];
+      if (typeOfColumn === 'boolean') {
         return valueFilter === null ? true : currentValue === valueFilter;
       }
-      if (type === 'number') {
+      if (typeOfColumn === 'number') {
         const isFromValid = valueFilter.from === undefined
           || parseInt(valueFilter.from, 10) <= currentValue;
         const isToValid = valueFilter.to === undefined
@@ -35,10 +79,10 @@ function process(data, options) {
 
         return isFromValid && isToValid;
       }
-      if (type === 'string') {
+      if (typeOfColumn === 'string') {
         return currentValue.toLowerCase().includes(valueFilter.toLowerCase());
       }
-      if (type === 'date') {
+      if (typeOfColumn === 'date') {
         const isFromValid = valueFilter.from === undefined
           || new Date(valueFilter.from) <= currentValue;
         const isToValid = valueFilter.to === undefined
@@ -47,7 +91,7 @@ function process(data, options) {
         return isFromValid && isToValid;
         // return currentValue.toLowerCase().includes(valueFilter.toLowerCase());
       }
-      throw new Error('Not supported data type');
+      throw new Error('Not supported data type2');
     }));
   } else {
     filteredData = data;
@@ -82,6 +126,7 @@ function calculateAge(birthday) {
   const ageDate = new Date(ageDifMs);
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
+
 function deleteFromDataByIds(data, ids, nameOfId) {
   mutationFilter(data, (el) => !ids.has(el[nameOfId]));
 }

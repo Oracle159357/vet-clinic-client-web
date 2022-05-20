@@ -3,9 +3,11 @@ import {
   usePagination,
   useAsyncDebounce,
   useSortBy,
+  useFilters,
 } from 'react-table';
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { DefaultFilterForColumnString } from './Filter';
 import './App.css';
 
 export default function TableV2(
@@ -31,7 +33,9 @@ export default function TableV2(
     nextPage,
     previousPage,
     setPageSize,
-    state: { pageIndex, pageSize, sortBy },
+    state: {
+      pageIndex, pageSize, sortBy, filters,
+    },
   } = useTable(
     {
       columns,
@@ -39,16 +43,27 @@ export default function TableV2(
       initialState: { pageIndex: 0, pageSize: 10 },
       manualPagination: true,
       pageCount: controlledPageCount,
+      manualFilters: true,
       manualSortBy: true,
+      defaultColumn: { Filter: DefaultFilterForColumnString },
+      // autoResetPage: false,
+      // autoResetExpanded: false,
+      // autoResetGroupBy: false,
+      // autoResetSelectedRows: false,
+      // autoResetSortBy: false,
+      // autoResetFilters: false,
+      // autoResetRowState: false,
     },
+    useFilters,
     useSortBy,
     usePagination,
   );
   const onFetchDataDebounced = useAsyncDebounce(fetchData, 100);
   useEffect(() => {
-    onFetchDataDebounced({ pageIndex, pageSize, sortBy });
-  }, [onFetchDataDebounced, pageIndex, pageSize, sortBy]);
-
+    onFetchDataDebounced({
+      pageIndex, pageSize, sortBy, filters,
+    });
+  }, [onFetchDataDebounced, pageIndex, pageSize, sortBy, filters]);
   return (
     <>
       <table className="table-width" {...getTableProps()}>
@@ -56,17 +71,20 @@ export default function TableV2(
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render('Header')}
-                  <span>
-                    {
-                    (() => {
-                      if (!column.isSorted) return ' ⇅';
-                      if (column.isSortedDesc) return ' ↓';
-                      return ' ↑';
-                    })()
-                  }
-                  </span>
+                <th {...column.getHeaderProps()}>
+                  <div {...column.getSortByToggleProps()}>
+                    {column.render('Header')}
+                    <span>
+                      {
+                        (() => {
+                          if (!column.isSorted) return ' ⇅';
+                          if (column.isSortedDesc) return ' ↓';
+                          return ' ↑';
+                        })()
+                      }
+                    </span>
+                  </div>
+                  {column.canFilter ? column.render('Filter') : null}
                 </th>
               ))}
             </tr>
