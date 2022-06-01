@@ -14,7 +14,7 @@ export function DefaultFilterForColumnString({
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
-      style={{ marginTop: '10px' }}
+      className="filter-margin-top"
     />
   );
 }
@@ -40,6 +40,7 @@ export function DefaultFilterForColumnBoolean({
     <select
       onChange={(e) => setFilter(booleanLabels[e.target.value])}
       defaultValue="null"
+      className="filter-margin-top"
     >
       <option value="true">✔️</option>
       <option value="false">❌</option>
@@ -68,13 +69,15 @@ export function DefaultFilterForColumnDate({
     <div className="date-table-filter">
       <input
         type="date"
-        value={filterValue?.from?.toString() ?? ''}
+        className="filter-margin-top"
+        value={filterValue?.from ?? ''}
         onChange={(e) => setFilter({ ...filterValue, from: e.target.value === '' ? undefined : e.target.value })}
       />
       <span>  -  </span>
       <input
         type="date"
-        value={filterValue?.to?.toString() ?? ''}
+        className="filter-margin-top"
+        value={filterValue?.to ?? ''}
         onChange={(e) => setFilter({ ...filterValue, to: e.target.value === '' ? undefined : e.target.value })}
       />
     </div>
@@ -104,19 +107,21 @@ export function DefaultFilterForColumnNumber({
         placeholder="From"
         min="1"
         type="number"
-        value={filterValue?.from ?? ''}
+        value={filterValue?.from?.toString() ?? ''}
         onChange={(e) => setFilter({
           ...filterValue,
-          from: e.target.value === '' ? undefined : e.target.value,
+          from: e.target.value === '' ? undefined : parseInt(e.target.value, 10),
         })}
+        className="filter-margin-top"
       />
       <span>  -  </span>
       <input
         placeholder="To"
         type="number"
         min="1"
-        value={filterValue?.to ?? ''}
-        onChange={(e) => setFilter({ ...filterValue, to: e.target.value === '' ? undefined : e.target.value })}
+        value={filterValue?.to?.toString() ?? ''}
+        onChange={(e) => setFilter({ ...filterValue, to: e.target.value === '' ? undefined : parseInt(e.target.value, 10) })}
+        className="filter-margin-top"
       />
     </div>
   );

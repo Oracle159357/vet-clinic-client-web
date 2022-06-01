@@ -114,3 +114,11 @@
   text-align: center;
   margin-top: 1%;
 }
+
+.row-center{
+  text-align: center;
+}
+
+.filter-margin-top{
+  margin-top: 10px;
+}

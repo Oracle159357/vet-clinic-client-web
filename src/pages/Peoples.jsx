@@ -1,82 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import * as Yup from 'yup';
 import './People.css';
-import PropTypes from 'prop-types';
-import { Formik, Form } from 'formik';
 import {
   getData1, deleteFromData1ByIds, addFromData1, changeFromData1,
 } from '../api';
 import Table from '../Table';
 import { useCustomButton, useData } from './hooks';
 import { useModal, Modal } from './modal';
-import { MyInput, MyCheckbox } from './customFormikComponent';
-
-function PeopleForm({
-  initialData,
-  onSubmit,
-}) {
-  return (
-    <Formik
-      initialValues={{
-        name: initialData.name,
-        married: initialData.married,
-        date: initialData.date,
-      }}
-      validationSchema={Yup.object({
-        name: Yup.string()
-          .max(10, 'Must be 10 characters or less')
-          .required('Required'),
-        // married: Yup.boolean()
-        //   .required('Required')
-        //   .oneOf([true], 'You must accept the terms and conditions.'),
-      })}
-      onSubmit={async (values, actions) => {
-        const res = await onSubmit({
-          ...initialData, ...values,
-        });
-        if (res) {
-          actions.setSubmitting(false);
-          actions.setStatus({
-            name: res.errors.name,
-          });
-        }
-      }}
-    >
-      <Form>
-        <MyInput
-          label="Name: "
-          name="name"
-          type="text"
-        />
-        <MyCheckbox
-          name="married"
-        >
-          Married:
-        </MyCheckbox>
-        <MyInput
-          label="Date: "
-          name="date"
-          type="date"
-        />
-        <button className="button-submit" type="submit">Submit</button>
-      </Form>
-    </Formik>
-  );
-}
-
-PeopleForm.defaultProps = {
-  initialData: { name: '', married: false, date: '2022-08-03' },
-};
-
-PeopleForm.propTypes = {
-  initialData: PropTypes.shape({
-    date: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    married: PropTypes.bool.isRequired,
-    id: PropTypes.string,
-  }),
-  onSubmit: PropTypes.func.isRequired,
-};
+import PeoplesForm from './PeoplesForm';
 
 async function getData(options) {
   const result = await getData1(options);
@@ -141,14 +71,14 @@ function Peoples() {
         hide={toggleAddModal}
         name="ADD NEW PEOPLE"
       >
-        <PeopleForm onSubmit={onAddClick} />
+        <PeoplesForm onSubmit={onAddClick} />
       </Modal>
       <Modal
         isShowing={isShowingChangeModal}
         hide={toggleChangeModal}
         name="CHANGE PEOPLE"
       >
-        <PeopleForm
+        <PeoplesForm
           onSubmit={onChangeCLick}
           initialData={editPeople && {
             name: editPeople.name,

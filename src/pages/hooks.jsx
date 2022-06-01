@@ -21,20 +21,36 @@ export function useDataV2({ getData }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(undefined);
   const [pageCount, setPageCount] = useState(0);
-  const refreshDataWithNewOptions = useCallback(({
-    pageSize, pageIndex, sortBy, filters,
-  }) => {
-    setLoading(true);
-    getData({
-      paging: { page: pageIndex, size: pageSize }, sorting: sortBy, filters,
-    }).then((info) => {
-      setData(info.resultData);
-      setPageCount(Math.ceil(info.dataLength / pageSize));
-      setLoading(false);
-    });
-  }, [getData]);
+  const [options, setOptions] = useState();
+  const setOptionTable = useCallback((args) => {
+    setOptions(args);
+  }, []);
+  const refreshDataWithOldOptions = useCallback(() => {
+    if (options) {
+      const {
+        pageSize,
+        pageIndex,
+        sortBy,
+        filters,
+      } = options;
+      setLoading(true);
+      getData({
+        paging: { page: pageIndex, size: pageSize }, sorting: sortBy, filters,
+      }).then((info) => {
+        setData(info.resultData);
+        setPageCount(Math.ceil(info.dataLength / pageSize));
+        setLoading(false);
+      });
+    }
+  }, [options, getData]);
+
+  useEffect(() => {
+    refreshDataWithOldOptions();
+  }, [refreshDataWithOldOptions]);
+
   return {
-    refreshDataWithNewOptions,
+    setOptionTable,
+    refreshDataWithOldOptions,
     pageCount,
     loading,
     data,
@@ -45,6 +61,18 @@ export function useCustomButton({ action, checked, refreshData }) {
   const onClick = async (arg) => {
     const result = await action(checked, arg);
     refreshData();
+    return result;
+  };
+
+  return { onClick };
+}
+
+export function useCustomButtonV2({
+  action, checked, refreshDataWithOldOptions,
+}) {
+  const onClick = async (arg) => {
+    const result = await action(checked, arg);
+    refreshDataWithOldOptions();
     return result;
   };
 

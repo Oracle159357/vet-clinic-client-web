@@ -26,8 +26,8 @@ const baseTypeOfColumn = {
 
 function process(data, options) {
   const { filters, sorting, paging } = options;
-  console.log(filters);
   let filteredData;
+  // ReactTable
   if (Array.isArray(filters)) {
     if (filters !== undefined && filters.length !== 0) {
       const allFilter = filters;
@@ -40,10 +40,9 @@ function process(data, options) {
         }
         if (typeOfColumn === 'number') {
           const isFromValid = value.from === undefined
-            || parseInt(value.from, 10) <= currentValue;
+            || value.from <= currentValue;
           const isToValid = value.to === undefined
-            || currentValue <= parseInt(value.to, 10);
-
+            || currentValue <= value.to;
           return isFromValid && isToValid;
         }
         if (typeOfColumn === 'string') {
@@ -56,13 +55,13 @@ function process(data, options) {
             || currentValue <= new Date(value.to);
 
           return isFromValid && isToValid;
-          // return currentValue.toLowerCase().includes(valueFilter.toLowerCase());
         }
         throw new Error('Not supported data type');
       }));
     } else {
       filteredData = data;
     }
+    // MyCustomTable
   } else if (filters !== undefined && Object.keys(filters).length !== 0) {
     const allFilter = Object.entries(filters);
     filteredData = data.filter((el) => allFilter.every(([key, { valueFilter }]) => {
@@ -89,7 +88,6 @@ function process(data, options) {
           || currentValue <= new Date(valueFilter.to);
 
         return isFromValid && isToValid;
-        // return currentValue.toLowerCase().includes(valueFilter.toLowerCase());
       }
       throw new Error('Not supported data type2');
     }));
@@ -126,9 +124,13 @@ function calculateAge(birthday) {
   const ageDate = new Date(ageDifMs);
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
-
+// MyTable
 function deleteFromDataByIds(data, ids, nameOfId) {
   mutationFilter(data, (el) => !ids.has(el[nameOfId]));
+}
+// ReactTable
+function deleteFromDataByIdsTableV2(data, ids, nameOfId) {
+  mutationFilter(data, (el) => !ids.includes(el[nameOfId]));
 }
 
 function addFromDataPerson(data1, data) {
@@ -198,10 +200,17 @@ export async function deleteFromData1ByIds(ids) {
   deleteFromDataByIds(data1, ids, 'id');
 }
 
+export async function deleteFromData1ByIdsTableV2(ids) {
+  deleteFromDataByIdsTableV2(data1, ids, 'id');
+}
+
 export async function deleteFromData2ByIds(ids) {
   deleteFromDataByIds(data2, ids, 'idKey');
 }
 
+export async function deleteFromData2ByIdsTableV2(ids) {
+  deleteFromDataByIdsTableV2(data2, ids, 'idKey');
+}
 export async function addFromData1(data) {
   const findDuplicateName = data1.findIndex((person) => person.name === data.name);
   if (findDuplicateName >= 0) {
@@ -214,14 +223,14 @@ export async function addFromData1(data) {
   return addFromDataPerson(data1, data);
 }
 
+export async function addFromData2(data) {
+  addFromDataAnimal(data2, data);
+}
+
 export async function changeFromData1(data) {
   changeDataPerson(data1, data);
 }
 
 export async function changeFromData2(data) {
   changeDataAnimal(data2, data);
-}
-
-export async function addFromData2(data) {
-  addFromDataAnimal(data2, data);
 }

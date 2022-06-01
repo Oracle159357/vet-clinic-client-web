@@ -1,7 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
-import { Form, Formik } from 'formik';
-import * as Yup from 'yup';
 import {
   addFromData2, changeFromData2, deleteFromData2ByIds, getData2,
 } from '../api';
@@ -9,65 +6,7 @@ import Table from '../Table';
 import { useCustomButton, useData } from './hooks';
 import { useModal, Modal } from './modal';
 import './People.css';
-import { MyInput } from './customFormikComponent';
-
-function AnimalForm({
-  initialData,
-  onSubmit,
-}) {
-  return (
-    <Formik
-      initialValues={{
-        dogName: initialData.dogName,
-        height: initialData.height,
-        date: initialData.date,
-      }}
-      validationSchema={Yup.object({
-        dogName: Yup.string()
-          .max(10, 'Must be 10 characters or less')
-          .required('Required'),
-        height: Yup.number().required().positive().integer(),
-      })}
-      onSubmit={(values) => {
-        onSubmit({
-          ...initialData, ...values,
-        });
-      }}
-    >
-      <Form>
-        <MyInput
-          label="Dog name: "
-          name="dogName"
-          type="text"
-        />
-        <MyInput
-          label="Height: "
-          name="height"
-          type="number"
-        />
-        <MyInput
-          label="Date: "
-          name="date"
-          type="date"
-        />
-        <button className="button-submit" type="submit">Submit</button>
-      </Form>
-    </Formik>
-  );
-}
-AnimalForm.defaultProps = {
-  initialData: { dogName: '', height: 1, date: '2022-08-03' },
-};
-
-AnimalForm.propTypes = {
-  initialData: PropTypes.shape({
-    date: PropTypes.string.isRequired,
-    dogName: PropTypes.string.isRequired,
-    height: PropTypes.number.isRequired,
-    idKey: PropTypes.string,
-  }),
-  onSubmit: PropTypes.func.isRequired,
-};
+import AnimalsForm from './AnimalsForm';
 
 async function getData(options) {
   const result = await getData2(options);
@@ -129,14 +68,14 @@ function Animals() {
         hide={toggleAddModal}
         name="ADD NEW ANIMAL"
       >
-        <AnimalForm onSubmit={onAddClick} />
+        <AnimalsForm onSubmit={onAddClick} />
       </Modal>
       <Modal
         isShowing={isShowingChangeModal}
         hide={toggleChangeModal}
         name="CHANGE ANIMAL"
       >
-        <AnimalForm
+        <AnimalsForm
           onSubmit={onChangeCLick}
           initialData={editPeople && {
             dogName: editPeople.dogName,
