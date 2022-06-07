@@ -8,11 +8,11 @@ import {
   useFilters,
   useRowSelect,
 } from 'react-table';
-import { DefaultFilterForColumnString } from './Filter';
-import { RowCheckBox, HeaderCheckBox } from './CheckBox';
-import './App.css';
+import { DefaultFilterForColumnString } from './FiltersForRT';
+import { RowCheckBox, HeaderCheckBox } from './CheckBoxForRT';
+import './TableWithRT.css';
 
-export default function TableV2(
+export default function TableWithRT(
   {
     columns,
     data,
@@ -146,7 +146,7 @@ export default function TableV2(
           </tr>
         </tbody>
       </table>
-      <div className="pagination pagination-center">
+      <div className="pagination-center">
         <div>
           <span>
             Page
@@ -198,7 +198,7 @@ export default function TableV2(
   );
 }
 
-TableV2.propTypes = {
+TableWithRT.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object),
   columns: PropTypes.arrayOf(PropTypes.shape({
     Header: PropTypes.string.isRequired,
@@ -212,6 +212,6 @@ TableV2.propTypes = {
   nameOfId: PropTypes.string.isRequired,
 };
 
-TableV2.defaultProps = {
+TableWithRT.defaultProps = {
   data: [],
 };

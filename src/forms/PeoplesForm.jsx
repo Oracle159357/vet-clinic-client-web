@@ -2,7 +2,8 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { MyCheckbox, MyInput } from './customFormikComponent';
+import { MyCheckbox, MyInput } from '../components/form/customFormikComponents';
+import './Form.css';
 
 export default function PeoplesForm({
   initialData,

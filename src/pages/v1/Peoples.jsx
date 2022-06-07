@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import './People.css';
+import '../Pages.css';
 import {
   getData1, deleteFromData1ByIds, addFromData1, changeFromData1,
-} from '../api';
-import Table from '../Table';
-import { useCustomButton, useData } from './hooks';
-import { useModal, Modal } from './modal';
-import PeoplesForm from './PeoplesForm';
+} from '../../api';
+import Table from '../../table/v1/Table';
+import { useCustomButton, useData } from '../hooks';
+import { useModal, Modal } from '../../components/modal/Modal';
+import PeoplesForm from '../../forms/PeoplesForm';
 
 async function getData(options) {
   const result = await getData1(options);
@@ -37,6 +37,7 @@ function Peoples() {
 
   const { onClick: onAlertClick } = useCustomButton({
     action: (allSelected) => {
+      // eslint-disable-next-line no-alert
       alert([...allSelected]);
       setChecked(new Set());
     },
@@ -91,7 +92,7 @@ function Peoples() {
       <div>
         <div className="table-header">
           <h1>
-            Peoples
+            Peoples(my table)
           </h1>
           <div className="table-header-buttons">
             <button type="button" className="button-default" onClick={onDeleteClick}>Delete columns</button>

@@ -1,0 +1,21 @@
+.table-width{
+    width:100%;
+    table-layout: fixed;
+    overflow-wrap: break-word;
+    border: 5px solid gray;
+    /*border: none;*/
+}
+
+.select-center{
+    width: 20%;
+    margin-left: 40%;
+    text-align: center;
+    margin-top: 1%;
+}
+
+.pagination-center{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+

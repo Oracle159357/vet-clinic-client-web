@@ -2,7 +2,7 @@ import React, {
   useEffect, useMemo, useState,
 } from 'react';
 import PropTypes from 'prop-types';
-import './App.css';
+import './Table.css';
 
 const booleanLabels = { true: true, false: false, null: null };
 
@@ -245,7 +245,7 @@ function Table({
         })()}
       </table>
       <div className="pages-size-center">
-        <span>Select page</span>
+        <span className="text-cell-center-select-page">Select page</span>
         {arrayOfPagesNumber.map((el) => (
           <button type="button" className="transparent-button" key={el} onClick={() => setCountOfPage(el)}>
             {el + 1}

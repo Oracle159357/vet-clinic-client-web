@@ -1,0 +1,52 @@
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu ul {
+    display: flex;
+    flex-direction: row;
+    background-color: #222;
+    margin: 0;
+    border: 2px solid white;
+}
+
+.menu li {
+    font-family: sans-serif;
+    font-size: 1.2em;
+    line-height: 40px;
+    height: 40px;
+    border-right: 1px solid white;
+    width: 50%;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #fff;
+    display: block;
+}
+.App-header {
+    background-color: #282c34;
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.Layout {
+    text-align: center;
+}
+
+#container {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+#main-content {
+    flex: 1;
+    overflow-y: scroll;
+}

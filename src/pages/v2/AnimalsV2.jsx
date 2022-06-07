@@ -3,25 +3,23 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import './People.css';
+import '../Pages.css';
 import {
-  addFromData1, changeFromData1,
-  deleteFromData1ByIdsTableV2,
-  getData1,
-} from '../api';
-import TableV2 from '../TableV2';
-import { useCustomButtonV2, useDataV2 } from './hooks';
+  addFromData2, changeFromData2,
+  deleteFromData2ByIdsTableV2,
+  getData2,
+} from '../../api';
+import TableWithRT from '../../table/v2/TableWithRT';
+import { useCustomButtonV2, useDataV2 } from '../hooks';
 import {
   DefaultFilterForColumnNumber,
   DefaultFilterForColumnString,
-  DefaultFilterForColumnBoolean,
-  DefaultFilterForColumnDate,
-} from '../Filter';
-import { Modal, useModal } from './modal';
-import PeoplesForm from './PeoplesForm';
+} from '../../table/v2/FiltersForRT';
+import { Modal, useModal } from '../../components/modal/Modal';
+import AnimalsForm from '../../forms/AnimalsForm';
 
 async function getData(options) {
-  const result = await getData1(options);
+  const result = await getData2(options);
   const formattedData = result.resultData
     .map((el) => ({ ...el, birthDate: new Date(el.birthDate) }));
   return { ...result, resultData: formattedData };
@@ -29,8 +27,8 @@ async function getData(options) {
 
 const columns = [
   {
-    Header: 'Name',
-    accessor: 'name',
+    Header: 'Dog name',
+    accessor: 'dogName',
     Filter: DefaultFilterForColumnString,
     // eslint-disable-next-line react/prop-types
     Cell: ({ value }) => (
@@ -51,46 +49,22 @@ const columns = [
     ),
   },
   {
-    Header: 'Married',
-    accessor: 'married',
-    Filter: DefaultFilterForColumnBoolean,
+    Header: 'Height',
+    accessor: 'height',
+    Filter: DefaultFilterForColumnNumber,
     // eslint-disable-next-line react/prop-types
     Cell: ({ value }) => (
       <div className="text-cell-center">
-        {value ? '✔️' : '❌'}
+        {new Intl.NumberFormat(
+          'ru-RU',
+          { style: 'decimal', maximumFractionDigits: 2, minimumFractionDigits: 2 },
+        ).format(value)}
       </div>
     ),
   },
-  {
-    Header: 'Birth date',
-    accessor: 'birthDate',
-    Filter: DefaultFilterForColumnDate,
-    // eslint-disable-next-line react/prop-types
-    Cell: ({ value }) => {
-      const formatter = useMemo(
-        () => new Intl.DateTimeFormat(
-          'ru',
-          {
-            year: 'numeric',
-            weekday: 'short',
-            month: 'numeric',
-            day: 'numeric',
-          },
-        ),
-        [],
-      );
-
-      return (
-        <div className="text-cell-center">
-          {formatter.format(value)}
-        </div>
-      );
-    },
-  },
-
 ];
 
-function PeoplesV2() {
+function AnimalsV2() {
   const {
     setOptionTable,
     pageCount,
@@ -104,8 +78,10 @@ function PeoplesV2() {
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
   const [clearSelection, setClearSelection] = useState(undefined);
+
   const { onClick: onAlertClick } = useCustomButtonV2({
     action: (allSelected) => {
+      // eslint-disable-next-line no-alert
       alert([...allSelected]);
       clearSelection();
     },
@@ -114,7 +90,7 @@ function PeoplesV2() {
   });
   const { onClick: onDeleteClick } = useCustomButtonV2({
     action: async (allSelected) => {
-      await deleteFromData1ByIdsTableV2(allSelected);
+      await deleteFromData2ByIdsTableV2(allSelected);
       reset();
     },
     checked,
@@ -122,7 +98,7 @@ function PeoplesV2() {
   });
   const { onClick: onAddClick } = useCustomButtonV2({
     action: async (allSelected, addData) => {
-      const result = await addFromData1(addData);
+      const result = await addFromData2(addData);
       if (!(result && result.errors)) {
         reset();
         toggleAddModal();
@@ -134,7 +110,7 @@ function PeoplesV2() {
   });
   const { onClick: onChangeCLick } = useCustomButtonV2({
     action: async (allSelected, changeData) => {
-      await changeFromData1(changeData);
+      await changeFromData2(changeData);
       reset();
       toggleChangeModal();
     },
@@ -144,8 +120,9 @@ function PeoplesV2() {
   const setClearAllSelected = useCallback((func) => {
     setClearSelection(() => func);
   }, [setClearSelection]);
+
   const editPeople = useMemo(
-    () => data?.find((el) => el.id === checked[0]),
+    () => data?.find((el) => el.idKey === checked[0]),
     [data, checked],
   );
 
@@ -155,46 +132,46 @@ function PeoplesV2() {
         <Modal
           isShowing={isShowingAddModal}
           hide={toggleAddModal}
-          name="ADD NEW PEOPLE"
+          name="ADD NEW ANIMAL"
         >
-          <PeoplesForm onSubmit={onAddClick} />
+          <AnimalsForm onSubmit={onAddClick} />
         </Modal>
         <Modal
           isShowing={isShowingChangeModal}
           hide={toggleChangeModal}
-          name="CHANGE PEOPLE"
+          name="CHANGE ANIMAL"
         >
-          <PeoplesForm
+          <AnimalsForm
             onSubmit={onChangeCLick}
             initialData={editPeople && {
-              name: editPeople.name,
-              married: editPeople.married,
+              dogName: editPeople.dogName,
+              height: editPeople.height,
               date: editPeople.birthDate.toISOString().substring(0, 10),
-              id: editPeople.id,
+              idKey: editPeople.idKey,
             }}
           />
         </Modal>
       </div>
       <div className="table-header">
         <h1>
-          Peoples
+          Animals(react-table)
         </h1>
         <div className="table-header-buttons">
           <button type="button" className="button-default" onClick={onAlertClick}>Alert columns</button>
           <button type="button" className="button-default" onClick={onDeleteClick}>Delete columns</button>
-          <button type="button" className="button-default" onClick={toggleAddModal}>Add People</button>
+          <button type="button" className="button-default" onClick={toggleAddModal}>Add Animal</button>
           <button
             type="button"
             className={`button-default ${checked?.length !== 1 ? 'disabled' : ''}`}
             disabled={checked?.length !== 1}
             onClick={toggleChangeModal}
           >
-            Change People
+            Change Animal
           </button>
         </div>
       </div>
       <div>
-        <TableV2
+        <TableWithRT
           columns={columns}
           data={data}
           fetchData={setOptionTable}
@@ -202,11 +179,11 @@ function PeoplesV2() {
           pageCount={pageCount}
           onCheckedChange={setCheckedAndFuncResetChecked}
           onClearSelectionChange={setClearAllSelected}
-          nameOfId="id"
+          nameOfId="idKey"
         />
       </div>
     </div>
   );
 }
 
-export default PeoplesV2;
+export default AnimalsV2;

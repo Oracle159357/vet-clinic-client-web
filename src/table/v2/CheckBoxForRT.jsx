@@ -1,4 +1,5 @@
 import React from 'react';
+import './CheckBoxAndFilters.css';
 
 const IndeterminateCheckbox = React.forwardRef(
   // eslint-disable-next-line react/prop-types

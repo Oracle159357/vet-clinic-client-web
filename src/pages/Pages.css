@@ -1,0 +1,42 @@
+
+.table-header h1 {
+    margin-left: 5px;
+}
+.table-header .table-header-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.table-header .table-header-buttons button {
+    height: 26px;
+}
+
+.text-cell-center {
+    text-align: center;
+}
+
+button {
+    font-size: .9rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 3px;
+    padding: .3rem 1rem;
+    margin-left: .5rem;
+}
+
+.button-default {
+    background: #247BA0;
+    color: #fff;
+    margin: 10px;
+}
+
+.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+

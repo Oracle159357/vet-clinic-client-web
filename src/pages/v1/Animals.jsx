@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import {
   addFromData2, changeFromData2, deleteFromData2ByIds, getData2,
-} from '../api';
-import Table from '../Table';
-import { useCustomButton, useData } from './hooks';
-import { useModal, Modal } from './modal';
-import './People.css';
-import AnimalsForm from './AnimalsForm';
+} from '../../api';
+import Table from '../../table/v1/Table';
+import { useCustomButton, useData } from '../hooks';
+import { useModal, Modal } from '../../components/modal/Modal';
+import '../Pages.css';
+import AnimalsForm from '../../forms/AnimalsForm';
 
 async function getData(options) {
   const result = await getData2(options);
@@ -88,7 +88,7 @@ function Animals() {
       <div>
         <div className="table-header">
           <h1>
-            Animals
+            Animals(my table)
           </h1>
           <div className="table-header-buttons">
             <button type="button" className="button-default" onClick={onDeleteClick}>Delete columns</button>

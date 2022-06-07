@@ -1,0 +1,47 @@
+.table-center{
+  border: 5px solid gray;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-center td {
+  text-align: center;
+}
+
+.number-table-filter input {
+  max-width: 70px;
+}
+
+.date-table-filter input {
+  max-width: 132px;
+}
+
+.transparent-button {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  margin: 10px;
+  font-size: 1.25em;
+}
+
+.pages-size-center{
+  display: flex;
+  justify-content: center;
+}
+
+.table-no-data{
+  background-color: gray;
+}
+
+.pages-size-center span {
+  margin: 10px;
+}
+
+.text-cell-center-select-page{
+  display: flex;
+  align-items: center;
+}
+

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+import './Modal.css';
 
 export const useModal = () => {
   const [isShowing, setIsShowing] = useState(false);
