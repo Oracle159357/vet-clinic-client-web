@@ -3,7 +3,7 @@ import {
   addFromData2, changeFromData2, deleteFromData2ByIds, getData2,
 } from '../../api';
 import Table from '../../table/v1/Table';
-import { useCustomButton, useData } from '../hooks';
+import { useCustomButton, useData } from '../../utils/hooks';
 import { useModal, Modal } from '../../components/modal/Modal';
 import '../Pages.css';
 import AnimalsForm from '../../forms/AnimalsForm';
@@ -37,6 +37,7 @@ function Animals() {
   });
   const { onClick: onAlertClick } = useCustomButton({
     action: (allSelected) => {
+      // eslint-disable-next-line no-alert
       alert([...allSelected]);
       setChecked(new Set());
     },

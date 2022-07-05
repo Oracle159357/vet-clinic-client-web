@@ -2,4 +2,15 @@
     color:red;
 }
 
+.button-submit {
+    background: #247BA0;
+    color: #fff;
+    margin: 10px;
+    width: 100%;
+}
+
+.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import Animals from './pages/v1/Animals';
 import Peoples from './pages/v1/Peoples';
 import PeoplesV2 from './pages/v2/PeoplesV2';
 import AnimalsV2 from './pages/v2/AnimalsV2';
 import Layout from './components/layout/Layout';
+import store from './store';
 
 function PeopleAndAnimalsTableV1() {
   return (
@@ -17,8 +19,10 @@ function PeopleAndAnimalsTableV1() {
 function PeopleAndAnimalsTableV2() {
   return (
     <div>
-      <PeoplesV2 />
-      <AnimalsV2 />
+      <Provider store={store}>
+        <PeoplesV2 />
+        <AnimalsV2 />
+      </Provider>
     </div>
   );
 }

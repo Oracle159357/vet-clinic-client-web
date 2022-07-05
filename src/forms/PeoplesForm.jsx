@@ -8,6 +8,7 @@ import './Form.css';
 export default function PeoplesForm({
   initialData,
   onSubmit,
+  statusOfDisable,
 }) {
   return (
     <Formik
@@ -52,7 +53,13 @@ export default function PeoplesForm({
           name="date"
           type="date"
         />
-        <button className="button-submit" type="submit">Submit</button>
+        <button
+          disabled={statusOfDisable}
+          type="submit"
+          className={`button-submit ${statusOfDisable ? 'disabled' : ''}`}
+        >
+          Submit
+        </button>
       </Form>
     </Formik>
   );
@@ -70,4 +77,5 @@ PeoplesForm.propTypes = {
     id: PropTypes.string,
   }),
   onSubmit: PropTypes.func.isRequired,
+  statusOfDisable: PropTypes.bool.isRequired,
 };

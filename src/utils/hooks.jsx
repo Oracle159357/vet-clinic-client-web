@@ -66,15 +66,3 @@ export function useCustomButton({ action, checked, refreshData }) {
 
   return { onClick };
 }
-
-export function useCustomButtonV2({
-  action, checked, refreshDataWithOldOptions,
-}) {
-  const onClick = async (arg) => {
-    const result = await action(checked, arg);
-    refreshDataWithOldOptions();
-    return result;
-  };
-
-  return { onClick };
-}

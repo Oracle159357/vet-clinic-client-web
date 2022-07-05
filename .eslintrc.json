@@ -2,11 +2,21 @@
   "extends": ["react-app", "airbnb"],
   "overrides": [
     {
-      "files": ["src/**/*.jsx"],
+      "files": ["src/**/*.jsx", "src/**/*.js"],
       "rules": {
         "react/forbid-prop-types": 0,
-        "react/jsx-props-no-spreading": "off"
+        "react/jsx-props-no-spreading": "off",
+        "default-param-last": 0
       }
     }
-  ]
+  ],
+
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
 }

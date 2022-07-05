@@ -1,5 +1,4 @@
 import React, {
-  useCallback,
   useMemo,
   useState,
 } from 'react';
@@ -10,7 +9,7 @@ import {
   getData2,
 } from '../../api';
 import TableWithRT from '../../table/v2/TableWithRT';
-import { useCustomButtonV2, useDataV2 } from '../hooks';
+import { useCustomButton, useDataV2 } from '../../utils/hooks';
 import {
   DefaultFilterForColumnNumber,
   DefaultFilterForColumnString,
@@ -72,54 +71,49 @@ function AnimalsV2() {
     data,
     refreshDataWithOldOptions,
   } = useDataV2({ getData });
-  const [{ checked, reset }, setCheckedAndFuncResetChecked] = useState(
-    { checked: undefined, reset: undefined },
-  );
+  const [resetChecked, setResetChecked] = useState();
+  const [checked, setChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
-  const [clearSelection, setClearSelection] = useState(undefined);
 
-  const { onClick: onAlertClick } = useCustomButtonV2({
+  const { onClick: onAlertClick } = useCustomButton({
     action: (allSelected) => {
       // eslint-disable-next-line no-alert
       alert([...allSelected]);
-      clearSelection();
+      resetChecked();
     },
     checked,
-    refreshDataWithOldOptions,
+    refreshData: refreshDataWithOldOptions,
   });
-  const { onClick: onDeleteClick } = useCustomButtonV2({
+  const { onClick: onDeleteClick } = useCustomButton({
     action: async (allSelected) => {
       await deleteFromData2ByIdsTableV2(allSelected);
-      reset();
+      resetChecked();
     },
     checked,
-    refreshDataWithOldOptions,
+    refreshData: refreshDataWithOldOptions,
   });
-  const { onClick: onAddClick } = useCustomButtonV2({
+  const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, addData) => {
       const result = await addFromData2(addData);
       if (!(result && result.errors)) {
-        reset();
+        resetChecked();
         toggleAddModal();
       }
       return result;
     },
     checked,
-    refreshDataWithOldOptions,
+    refreshData: refreshDataWithOldOptions,
   });
-  const { onClick: onChangeCLick } = useCustomButtonV2({
+  const { onClick: onChangeCLick } = useCustomButton({
     action: async (allSelected, changeData) => {
       await changeFromData2(changeData);
-      reset();
+      resetChecked();
       toggleChangeModal();
     },
     checked,
-    refreshDataWithOldOptions,
+    refreshData: refreshDataWithOldOptions,
   });
-  const setClearAllSelected = useCallback((func) => {
-    setClearSelection(() => func);
-  }, [setClearSelection]);
 
   const editPeople = useMemo(
     () => data?.find((el) => el.idKey === checked[0]),
@@ -177,9 +171,9 @@ function AnimalsV2() {
           fetchData={setOptionTable}
           loading={loading}
           pageCount={pageCount}
-          onCheckedChange={setCheckedAndFuncResetChecked}
-          onClearSelectionChange={setClearAllSelected}
+          onCheckedChange={setChecked}
           nameOfId="idKey"
+          setResetChecked={setResetChecked}
         />
       </div>
     </div>

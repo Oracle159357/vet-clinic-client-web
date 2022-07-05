@@ -159,15 +159,15 @@ function addFromDataAnimal(data1, data) {
 
 function changeDataPerson(allData, changedData) {
   const formattedChangedData = JSON.parse(JSON.stringify(changedData));
-  const newData = {
+  const itemIndex = allData.findIndex((animal) => animal.id === formattedChangedData.id);
+  // eslint-disable-next-line no-param-reassign
+  allData[itemIndex] = {
     id: formattedChangedData.id,
     name: formattedChangedData.name,
     age: calculateAge(new Date(formattedChangedData.date)),
     married: formattedChangedData.married,
     birthDate: new Date(formattedChangedData.date),
   };
-  // eslint-disable-next-line no-param-reassign
-  allData[allData.findIndex((animal) => animal.id === formattedChangedData.id)] = newData;
 }
 
 function changeDataAnimal(allData, changedData) {
@@ -189,7 +189,12 @@ const data1 = generateData1(22);
 const data2 = generateData2(22);
 
 export async function getData1(options) {
-  return process(data1, options);
+  return new Promise((res) => {
+    setTimeout(() => {
+      const result = process(data1, options);
+      res(result);
+    }, 3000);
+  });
 }
 
 export async function getData2(options) {
@@ -201,7 +206,12 @@ export async function deleteFromData1ByIds(ids) {
 }
 
 export async function deleteFromData1ByIdsTableV2(ids) {
-  deleteFromDataByIdsTableV2(data1, ids, 'id');
+  return new Promise((res) => {
+    setTimeout(() => {
+      deleteFromDataByIdsTableV2(data1, ids, 'id');
+      res(undefined);
+    }, 3000);
+  });
 }
 
 export async function deleteFromData2ByIds(ids) {
@@ -220,7 +230,12 @@ export async function addFromData1(data) {
       },
     };
   }
-  return addFromDataPerson(data1, data);
+  return new Promise((res) => {
+    setTimeout(() => {
+      addFromDataPerson(data1, data);
+      res(undefined);
+    }, 3000);
+  });
 }
 
 export async function addFromData2(data) {
@@ -228,7 +243,12 @@ export async function addFromData2(data) {
 }
 
 export async function changeFromData1(data) {
-  changeDataPerson(data1, data);
+  return new Promise((res) => {
+    setTimeout(() => {
+      changeDataPerson(data1, data);
+      res(undefined);
+    }, 3000);
+  });
 }
 
 export async function changeFromData2(data) {

@@ -20,8 +20,8 @@ export default function TableWithRT(
     loading,
     pageCount: controlledPageCount,
     onCheckedChange,
-    onClearSelectionChange,
     nameOfId,
+    setResetChecked,
   },
 ) {
   const {
@@ -73,12 +73,12 @@ export default function TableWithRT(
 
   useEffect(() => {
     const checked = selectedFlatRows.map((allChecked) => allChecked.original[nameOfId]);
-    onCheckedChange({ checked, reset: () => toggleAllRowsSelected(false) });
-  }, [nameOfId, onCheckedChange, selectedFlatRows, toggleAllRowsSelected]);
+    onCheckedChange(checked);
+  }, [nameOfId, onCheckedChange, selectedFlatRows]);
 
   useEffect(() => {
-    onClearSelectionChange(() => toggleAllRowsSelected(false));
-  }, [onClearSelectionChange, toggleAllRowsSelected]);
+    setResetChecked(() => () => toggleAllRowsSelected(false));
+  }, [toggleAllRowsSelected, setResetChecked]);
 
   const onFetchDataDebounced = useAsyncDebounce(fetchData, 100);
   useEffect(() => {
@@ -86,6 +86,7 @@ export default function TableWithRT(
       pageIndex, pageSize, sortBy, filters,
     });
   }, [onFetchDataDebounced, pageIndex, pageSize, sortBy, filters]);
+
   return (
     <>
       <table className="table-width" {...getTableProps()}>
@@ -119,31 +120,38 @@ export default function TableWithRT(
         <tbody
           {...getTableBodyProps()}
         >
-          {page.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => <td {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
-              </tr>
-            );
-          })}
-          <tr>
-            {loading ? (
-            // Use our custom loading state to show a loading indicator
-              <td>Loading...</td>
-            ) : (
-              <td>
-                Showing
-                {' '}
-                {page.length}
-                {' '}
-                of ~
-                {controlledPageCount * pageSize}
-                {' '}
-                results
+          {loading ? (
+            <tr>
+              <td colSpan={headerGroups[0].headers.length}>
+                <div className="loader-center">
+                  <div className="loader" />
+                </div>
               </td>
-            )}
-          </tr>
+            </tr>
+          ) : (
+            [
+              ...page.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map((cell) => <td {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+                  </tr>
+                );
+              }),
+              <tr key="paging-row">
+                <td>
+                  Showing
+                  {' '}
+                  {page.length}
+                  {' '}
+                  of ~
+                  {controlledPageCount * pageSize}
+                  {' '}
+                  results
+                </td>
+              </tr>,
+            ]
+          )}
         </tbody>
       </table>
       <div className="pagination-center">
@@ -208,8 +216,8 @@ TableWithRT.propTypes = {
   loading: PropTypes.bool.isRequired,
   pageCount: PropTypes.number.isRequired,
   onCheckedChange: PropTypes.func.isRequired,
-  onClearSelectionChange: PropTypes.func.isRequired,
   nameOfId: PropTypes.string.isRequired,
+  setResetChecked: PropTypes.func.isRequired,
 };
 
 TableWithRT.defaultProps = {

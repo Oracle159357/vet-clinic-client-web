@@ -4,7 +4,7 @@ import {
   getData1, deleteFromData1ByIds, addFromData1, changeFromData1,
 } from '../../api';
 import Table from '../../table/v1/Table';
-import { useCustomButton, useData } from '../hooks';
+import { useCustomButton, useData } from '../../utils/hooks';
 import { useModal, Modal } from '../../components/modal/Modal';
 import PeoplesForm from '../../forms/PeoplesForm';
 
@@ -72,7 +72,7 @@ function Peoples() {
         hide={toggleAddModal}
         name="ADD NEW PEOPLE"
       >
-        <PeoplesForm onSubmit={onAddClick} />
+        <PeoplesForm onSubmit={onAddClick} statusOfDisable={false} />
       </Modal>
       <Modal
         isShowing={isShowingChangeModal}
@@ -87,6 +87,7 @@ function Peoples() {
             date: editPeople.birthDate.toISOString().substring(0, 10),
             id: editPeople.id,
           }}
+          statusOfDisable={false}
         />
       </Modal>
       <div>

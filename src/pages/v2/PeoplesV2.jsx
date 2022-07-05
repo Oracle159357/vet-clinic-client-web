@@ -1,16 +1,13 @@
 import React, {
   useCallback,
-  useMemo,
-  useState,
+  useMemo, useState,
 } from 'react';
 import '../Pages.css';
-import {
-  addFromData1, changeFromData1,
-  deleteFromData1ByIdsTableV2,
-  getData1,
-} from '../../api';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import TableWithRT from '../../table/v2/TableWithRT';
-import { useCustomButtonV2, useDataV2 } from '../hooks';
+import { useCustomButton } from '../../utils/hooks';
 import {
   DefaultFilterForColumnNumber,
   DefaultFilterForColumnString,
@@ -20,12 +17,30 @@ import {
 import { Modal, useModal } from '../../components/modal/Modal';
 import PeoplesForm from '../../forms/PeoplesForm';
 
-async function getData(options) {
-  const result = await getData1(options);
-  const formattedData = result.resultData
-    .map((el) => ({ ...el, birthDate: new Date(el.birthDate) }));
-  return { ...result, resultData: formattedData };
-}
+import { addPeople } from '../../store/actions/peoples/actions/add';
+import { changePeople } from '../../store/actions/peoples/actions/change';
+import { deletePeople } from '../../store/actions/peoples/actions/delete';
+import { loadPeople, setPeopleOptionsAndLoad } from '../../store/actions/peoples/result';
+import { SetPeopleChecked } from '../../store/actions/peoples/checked';
+
+const mapStateToProps = ({ peoples }) => ({
+  data: peoples.result.data,
+  pageCount: peoples.result.pageCount,
+  loading: peoples.result.loading,
+  checked: peoples.checked,
+  addLoading: peoples.actions.add.loading,
+  changeLoading: peoples.actions.change.loading,
+  deleteLoading: peoples.actions.delete.loading,
+});
+
+const mapDispatchToProps = {
+  onDeletePeople: deletePeople,
+  onAddPeople: addPeople,
+  onChangePeople: changePeople,
+  onLoadPeople: loadPeople,
+  setChecked: (checked) => SetPeopleChecked(checked),
+  onSetPeopleOptionsAndLoad: (options) => setPeopleOptionsAndLoad(options),
+};
 
 const columns = [
   {
@@ -90,66 +105,69 @@ const columns = [
 
 ];
 
-function PeoplesV2() {
-  const {
-    setOptionTable,
+function PeoplesV2(
+  {
+    onDeletePeople,
+    onAddPeople,
+    onChangePeople,
+    onSetPeopleOptionsAndLoad,
+    onLoadPeople,
+    setChecked,
+    data,
     pageCount,
     loading,
-    data,
-    refreshDataWithOldOptions,
-  } = useDataV2({ getData });
-  const [{ checked, reset }, setCheckedAndFuncResetChecked] = useState(
-    { checked: undefined, reset: undefined },
-  );
+    checked,
+    addLoading,
+    changeLoading,
+    deleteLoading,
+  },
+) {
+  const [resetChecked, setResetChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
-  const [clearSelection, setClearSelection] = useState(undefined);
-  const { onClick: onAlertClick } = useCustomButtonV2({
+  const { onClick: onAlertClick } = useCustomButton({
     action: (allSelected) => {
       // eslint-disable-next-line no-alert
       alert([...allSelected]);
-      clearSelection();
+      resetChecked();
     },
     checked,
-    refreshDataWithOldOptions,
+    refreshData: onLoadPeople,
   });
-  const { onClick: onDeleteClick } = useCustomButtonV2({
+  const { onClick: onDeleteClick } = useCustomButton({
     action: async (allSelected) => {
-      await deleteFromData1ByIdsTableV2(allSelected);
-      reset();
+      await onDeletePeople(allSelected);
+      await resetChecked();
     },
     checked,
-    refreshDataWithOldOptions,
+    refreshData: onLoadPeople,
   });
-  const { onClick: onAddClick } = useCustomButtonV2({
+  const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, addData) => {
-      const result = await addFromData1(addData);
-      if (!(result && result.errors)) {
-        reset();
+      const dataFromAPi = await onAddPeople(addData);
+      if (dataFromAPi?.errors === undefined) {
+        resetChecked();
         toggleAddModal();
       }
-      return result;
+      return dataFromAPi;
     },
     checked,
-    refreshDataWithOldOptions,
+    refreshData: onLoadPeople,
   });
-  const { onClick: onChangeCLick } = useCustomButtonV2({
+  const { onClick: onChangeCLick } = useCustomButton({
     action: async (allSelected, changeData) => {
-      await changeFromData1(changeData);
-      reset();
+      await onChangePeople(changeData);
+      resetChecked();
       toggleChangeModal();
     },
     checked,
-    refreshDataWithOldOptions,
+    refreshData: onLoadPeople,
   });
-  const setClearAllSelected = useCallback((func) => {
-    setClearSelection(() => func);
-  }, [setClearSelection]);
   const editPeople = useMemo(
     () => data?.find((el) => el.id === checked[0]),
     [data, checked],
   );
-
+  const load = useCallback(onSetPeopleOptionsAndLoad, [onSetPeopleOptionsAndLoad]);
   return (
     <div>
       <div>
@@ -158,7 +176,7 @@ function PeoplesV2() {
           hide={toggleAddModal}
           name="ADD NEW PEOPLE"
         >
-          <PeoplesForm onSubmit={onAddClick} />
+          <PeoplesForm onSubmit={onAddClick} statusOfDisable={addLoading} />
         </Modal>
         <Modal
           isShowing={isShowingChangeModal}
@@ -166,6 +184,7 @@ function PeoplesV2() {
           name="CHANGE PEOPLE"
         >
           <PeoplesForm
+            statusOfDisable={changeLoading}
             onSubmit={onChangeCLick}
             initialData={editPeople && {
               name: editPeople.name,
@@ -182,7 +201,14 @@ function PeoplesV2() {
         </h1>
         <div className="table-header-buttons">
           <button type="button" className="button-default" onClick={onAlertClick}>Alert columns</button>
-          <button type="button" className="button-default" onClick={onDeleteClick}>Delete columns</button>
+          <button
+            type="button"
+            className={`button-default ${(!checked?.length || deleteLoading) ? 'disabled' : ''}`}
+            disabled={!checked?.length || deleteLoading}
+            onClick={onDeleteClick}
+          >
+            Delete columns
+          </button>
           <button type="button" className="button-default" onClick={toggleAddModal}>Add People</button>
           <button
             type="button"
@@ -198,16 +224,39 @@ function PeoplesV2() {
         <TableWithRT
           columns={columns}
           data={data}
-          fetchData={setOptionTable}
+          fetchData={load}
           loading={loading}
           pageCount={pageCount}
-          onCheckedChange={setCheckedAndFuncResetChecked}
-          onClearSelectionChange={setClearAllSelected}
+          onCheckedChange={setChecked}
           nameOfId="id"
+          setResetChecked={setResetChecked}
         />
       </div>
     </div>
   );
 }
 
-export default PeoplesV2;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(PeoplesV2);
+
+PeoplesV2.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.object),
+  checked: PropTypes.arrayOf(PropTypes.string).isRequired,
+  addLoading: PropTypes.bool.isRequired,
+  changeLoading: PropTypes.bool.isRequired,
+  deleteLoading: PropTypes.bool.isRequired,
+  setChecked: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  pageCount: PropTypes.number.isRequired,
+  onAddPeople: PropTypes.func.isRequired,
+  onChangePeople: PropTypes.func.isRequired,
+  onDeletePeople: PropTypes.func.isRequired,
+  onLoadPeople: PropTypes.func.isRequired,
+  onSetPeopleOptionsAndLoad: PropTypes.func.isRequired,
+};
+
+PeoplesV2.defaultProps = {
+  data: [],
+};
