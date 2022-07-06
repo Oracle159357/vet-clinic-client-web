@@ -8,6 +8,7 @@ import './Form.css';
 export default function AnimalsForm({
   initialData,
   onSubmit,
+  statusOfDisable,
 }) {
   return (
     <Formik
@@ -48,7 +49,13 @@ export default function AnimalsForm({
           name="date"
           type="date"
         />
-        <button className="button-submit" type="submit">Submit</button>
+        <button
+          disabled={statusOfDisable}
+          type="submit"
+          className={`button-submit ${statusOfDisable ? 'disabled' : ''}`}
+        >
+          Submit
+        </button>
       </Form>
     </Formik>
   );
@@ -65,4 +72,5 @@ AnimalsForm.propTypes = {
     idKey: PropTypes.string,
   }),
   onSubmit: PropTypes.func.isRequired,
+  statusOfDisable: PropTypes.bool.isRequired,
 };

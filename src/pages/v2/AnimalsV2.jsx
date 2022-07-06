@@ -1,15 +1,14 @@
 import React, {
   useMemo,
   useState,
+  useCallback,
 } from 'react';
 import '../Pages.css';
-import {
-  addFromData2, changeFromData2,
-  deleteFromData2ByIdsTableV2,
-  getData2,
-} from '../../api';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import TableWithRT from '../../table/v2/TableWithRT';
-import { useCustomButton, useDataV2 } from '../../utils/hooks';
+import { useCustomButton } from '../../utils/hooks';
 import {
   DefaultFilterForColumnNumber,
   DefaultFilterForColumnString,
@@ -17,12 +16,30 @@ import {
 import { Modal, useModal } from '../../components/modal/Modal';
 import AnimalsForm from '../../forms/AnimalsForm';
 
-async function getData(options) {
-  const result = await getData2(options);
-  const formattedData = result.resultData
-    .map((el) => ({ ...el, birthDate: new Date(el.birthDate) }));
-  return { ...result, resultData: formattedData };
-}
+import { addAnimal } from '../../store/actions/animals/actions/add';
+import { changeAnimal } from '../../store/actions/animals/actions/change';
+import { deleteAnimal } from '../../store/actions/animals/actions/delete';
+import { loadAnimal, setAnimalOptionsAndLoad } from '../../store/actions/animals/result';
+import { SetAnimalChecked } from '../../store/actions/animals/checked';
+
+const mapStateToProps = ({ animals }) => ({
+  data: animals.result.data,
+  pageCount: animals.result.pageCount,
+  loading: animals.result.loading,
+  checked: animals.checked,
+  addLoading: animals.actions.add.loading,
+  changeLoading: animals.actions.change.loading,
+  deleteLoading: animals.actions.delete.loading,
+});
+
+const mapDispatchToProps = {
+  onDeleteAnimal: deleteAnimal,
+  onAddAnimal: addAnimal,
+  onChangeAnimal: changeAnimal,
+  onLoadAnimal: loadAnimal,
+  setChecked: (checked) => SetAnimalChecked(checked),
+  onSetAnimalOptionsAndLoad: (options) => setAnimalOptionsAndLoad(options),
+};
 
 const columns = [
   {
@@ -63,16 +80,24 @@ const columns = [
   },
 ];
 
-function AnimalsV2() {
-  const {
-    setOptionTable,
+function AnimalsV2(
+  {
+    onDeleteAnimal,
+    onAddAnimal,
+    onChangeAnimal,
+    onSetAnimalOptionsAndLoad,
+    onLoadAnimal,
+    setChecked,
+    data,
     pageCount,
     loading,
-    data,
-    refreshDataWithOldOptions,
-  } = useDataV2({ getData });
+    checked,
+    addLoading,
+    changeLoading,
+    deleteLoading,
+  },
+) {
   const [resetChecked, setResetChecked] = useState();
-  const [checked, setChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
 
@@ -83,19 +108,19 @@ function AnimalsV2() {
       resetChecked();
     },
     checked,
-    refreshData: refreshDataWithOldOptions,
+    refreshData: onLoadAnimal,
   });
   const { onClick: onDeleteClick } = useCustomButton({
     action: async (allSelected) => {
-      await deleteFromData2ByIdsTableV2(allSelected);
+      await onDeleteAnimal(allSelected);
       resetChecked();
     },
     checked,
-    refreshData: refreshDataWithOldOptions,
+    refreshData: onLoadAnimal,
   });
   const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, addData) => {
-      const result = await addFromData2(addData);
+      const result = await onAddAnimal(addData);
       if (!(result && result.errors)) {
         resetChecked();
         toggleAddModal();
@@ -103,23 +128,23 @@ function AnimalsV2() {
       return result;
     },
     checked,
-    refreshData: refreshDataWithOldOptions,
+    refreshData: onLoadAnimal,
   });
   const { onClick: onChangeCLick } = useCustomButton({
     action: async (allSelected, changeData) => {
-      await changeFromData2(changeData);
+      await onChangeAnimal(changeData);
       resetChecked();
       toggleChangeModal();
     },
     checked,
-    refreshData: refreshDataWithOldOptions,
+    refreshData: onLoadAnimal,
   });
 
   const editPeople = useMemo(
     () => data?.find((el) => el.idKey === checked[0]),
     [data, checked],
   );
-
+  const load = useCallback(onSetAnimalOptionsAndLoad, [onSetAnimalOptionsAndLoad]);
   return (
     <div>
       <div>
@@ -128,7 +153,7 @@ function AnimalsV2() {
           hide={toggleAddModal}
           name="ADD NEW ANIMAL"
         >
-          <AnimalsForm onSubmit={onAddClick} />
+          <AnimalsForm onSubmit={onAddClick} statusOfDisable={addLoading} />
         </Modal>
         <Modal
           isShowing={isShowingChangeModal}
@@ -136,6 +161,7 @@ function AnimalsV2() {
           name="CHANGE ANIMAL"
         >
           <AnimalsForm
+            statusOfDisable={changeLoading}
             onSubmit={onChangeCLick}
             initialData={editPeople && {
               dogName: editPeople.dogName,
@@ -151,8 +177,6 @@ function AnimalsV2() {
           Animals(react-table)
         </h1>
         <div className="table-header-buttons">
-          <button type="button" className="button-default" onClick={onAlertClick}>Alert columns</button>
-          <button type="button" className="button-default" onClick={onDeleteClick}>Delete columns</button>
           <button type="button" className="button-default" onClick={toggleAddModal}>Add Animal</button>
           <button
             type="button"
@@ -162,13 +186,22 @@ function AnimalsV2() {
           >
             Change Animal
           </button>
+          <button
+            type="button"
+            className={`button-default ${(!checked?.length || deleteLoading) ? 'disabled' : ''}`}
+            disabled={!checked?.length || deleteLoading}
+            onClick={onDeleteClick}
+          >
+            Delete Animal
+          </button>
+          <button type="button" className="button-default" onClick={onAlertClick}>Alert Animal</button>
         </div>
       </div>
       <div>
         <TableWithRT
           columns={columns}
           data={data}
-          fetchData={setOptionTable}
+          fetchData={load}
           loading={loading}
           pageCount={pageCount}
           onCheckedChange={setChecked}
@@ -180,4 +213,27 @@ function AnimalsV2() {
   );
 }
 
-export default AnimalsV2;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(AnimalsV2);
+
+AnimalsV2.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.object),
+  checked: PropTypes.arrayOf(PropTypes.string).isRequired,
+  addLoading: PropTypes.bool.isRequired,
+  changeLoading: PropTypes.bool.isRequired,
+  deleteLoading: PropTypes.bool.isRequired,
+  setChecked: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  pageCount: PropTypes.number.isRequired,
+  onAddAnimal: PropTypes.func.isRequired,
+  onChangeAnimal: PropTypes.func.isRequired,
+  onDeleteAnimal: PropTypes.func.isRequired,
+  onLoadAnimal: PropTypes.func.isRequired,
+  onSetAnimalOptionsAndLoad: PropTypes.func.isRequired,
+};
+
+AnimalsV2.defaultProps = {
+  data: [],
+};

@@ -22,6 +22,8 @@ const baseTypeOfColumn = {
   age: 'number',
   married: 'boolean',
   birthDate: 'date',
+  dogName: 'string',
+  height: 'number',
 };
 
 function process(data, options) {
@@ -193,12 +195,17 @@ export async function getData1(options) {
     setTimeout(() => {
       const result = process(data1, options);
       res(result);
-    }, 3000);
+    }, 1000);
   });
 }
 
 export async function getData2(options) {
-  return process(data2, options);
+  return new Promise((res) => {
+    setTimeout(() => {
+      const result = process(data2, options);
+      res(result);
+    }, 1000);
+  });
 }
 
 export async function deleteFromData1ByIds(ids) {
@@ -210,7 +217,7 @@ export async function deleteFromData1ByIdsTableV2(ids) {
     setTimeout(() => {
       deleteFromDataByIdsTableV2(data1, ids, 'id');
       res(undefined);
-    }, 3000);
+    }, 1000);
   });
 }
 
@@ -219,8 +226,14 @@ export async function deleteFromData2ByIds(ids) {
 }
 
 export async function deleteFromData2ByIdsTableV2(ids) {
-  deleteFromDataByIdsTableV2(data2, ids, 'idKey');
+  return new Promise((res) => {
+    setTimeout(() => {
+      deleteFromDataByIdsTableV2(data2, ids, 'idKey');
+      res(undefined);
+    }, 1000);
+  });
 }
+
 export async function addFromData1(data) {
   const findDuplicateName = data1.findIndex((person) => person.name === data.name);
   if (findDuplicateName >= 0) {
@@ -234,12 +247,25 @@ export async function addFromData1(data) {
     setTimeout(() => {
       addFromDataPerson(data1, data);
       res(undefined);
-    }, 3000);
+    }, 1000);
   });
 }
 
 export async function addFromData2(data) {
-  addFromDataAnimal(data2, data);
+  const findDuplicateName = data1.findIndex((animal) => animal.dogName === data.dogName);
+  if (findDuplicateName >= 0) {
+    return {
+      errors: {
+        dogName: 'This name already exists',
+      },
+    };
+  }
+  return new Promise((res) => {
+    setTimeout(() => {
+      addFromDataAnimal(data2, data);
+      res(undefined);
+    }, 1000);
+  });
 }
 
 export async function changeFromData1(data) {
@@ -247,10 +273,15 @@ export async function changeFromData1(data) {
     setTimeout(() => {
       changeDataPerson(data1, data);
       res(undefined);
-    }, 3000);
+    }, 1000);
   });
 }
 
 export async function changeFromData2(data) {
-  changeDataAnimal(data2, data);
+  return new Promise((res) => {
+    setTimeout(() => {
+      changeDataAnimal(data2, data);
+      res(undefined);
+    }, 1000);
+  });
 }

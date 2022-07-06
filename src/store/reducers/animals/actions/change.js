@@ -1,22 +1,22 @@
 import {
-  CHANGE_PEOPLE_FAILURE,
-  CHANGE_PEOPLE_STARTED,
-  CHANGE_PEOPLE_SUCCESS,
-} from '../../../constants/action-types/peoples';
+  CHANGE_ANIMAL_FAILURE,
+  CHANGE_ANIMAL_STARTED,
+  CHANGE_ANIMAL_SUCCESS,
+} from '../../../constants/action-types/animals';
 
 export default function changeReducer(state = { loading: false, error: null }, action) {
   switch (action.type) {
-    case CHANGE_PEOPLE_STARTED:
+    case CHANGE_ANIMAL_STARTED:
       return {
         error: null,
         loading: true,
       };
-    case CHANGE_PEOPLE_SUCCESS:
+    case CHANGE_ANIMAL_SUCCESS:
       return {
         error: null,
         loading: false,
       };
-    case CHANGE_PEOPLE_FAILURE:
+    case CHANGE_ANIMAL_FAILURE:
       return {
         error: action.payload.error,
         loading: false,

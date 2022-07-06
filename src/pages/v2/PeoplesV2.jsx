@@ -137,7 +137,7 @@ function PeoplesV2(
   const { onClick: onDeleteClick } = useCustomButton({
     action: async (allSelected) => {
       await onDeletePeople(allSelected);
-      await resetChecked();
+      resetChecked();
     },
     checked,
     refreshData: onLoadPeople,
@@ -200,24 +200,24 @@ function PeoplesV2(
           Peoples(react-table)
         </h1>
         <div className="table-header-buttons">
-          <button type="button" className="button-default" onClick={onAlertClick}>Alert columns</button>
-          <button
-            type="button"
-            className={`button-default ${(!checked?.length || deleteLoading) ? 'disabled' : ''}`}
-            disabled={!checked?.length || deleteLoading}
-            onClick={onDeleteClick}
-          >
-            Delete columns
-          </button>
-          <button type="button" className="button-default" onClick={toggleAddModal}>Add People</button>
+          <button type="button" className="button-default" onClick={toggleAddModal}>Add Person</button>
           <button
             type="button"
             className={`button-default ${checked?.length !== 1 ? 'disabled' : ''}`}
             disabled={checked?.length !== 1}
             onClick={toggleChangeModal}
           >
-            Change People
+            Change Person
           </button>
+          <button
+            type="button"
+            className={`button-default ${(!checked?.length || deleteLoading) ? 'disabled' : ''}`}
+            disabled={!checked?.length || deleteLoading}
+            onClick={onDeleteClick}
+          >
+            Delete Person
+          </button>
+          <button type="button" className="button-default" onClick={onAlertClick}>Alert People</button>
         </div>
       </div>
       <div>

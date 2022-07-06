@@ -1,5 +1,5 @@
 import { deleteFromData1ByIdsTableV2 } from 'api';
-import { DELETE_PEOPLE_FAILURE, DELETE_PEOPLE_STARTED, DELETE_PEOPLE_SUCCESS } from 'store/constants/action-types';
+import { DELETE_PEOPLE_FAILURE, DELETE_PEOPLE_STARTED, DELETE_PEOPLE_SUCCESS } from 'store/constants/action-types/peoples';
 
 const DeletePeopleStarted = () => ({
   type: DELETE_PEOPLE_STARTED,

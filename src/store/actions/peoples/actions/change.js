@@ -1,4 +1,4 @@
-import { CHANGE_PEOPLE_FAILURE, CHANGE_PEOPLE_STARTED, CHANGE_PEOPLE_SUCCESS } from '../../../constants/action-types';
+import { CHANGE_PEOPLE_FAILURE, CHANGE_PEOPLE_STARTED, CHANGE_PEOPLE_SUCCESS } from '../../../constants/action-types/peoples';
 import { changeFromData1 } from '../../../../api';
 
 const ChangePeopleStarted = () => ({

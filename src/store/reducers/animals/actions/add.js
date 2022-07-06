@@ -1,22 +1,22 @@
 import {
-  ADD_PEOPLE_FAILURE,
-  ADD_PEOPLE_STARTED,
-  ADD_PEOPLE_SUCCESS,
-} from '../../../constants/action-types/peoples';
+  ADD_ANIMAL_FAILURE,
+  ADD_ANIMAL_STARTED,
+  ADD_ANIMAL_SUCCESS,
+} from '../../../constants/action-types/animals';
 
 export default function addReducer(state = { loading: false, error: null }, action) {
   switch (action.type) {
-    case ADD_PEOPLE_STARTED:
+    case ADD_ANIMAL_STARTED:
       return {
         error: null,
         loading: true,
       };
-    case ADD_PEOPLE_SUCCESS:
+    case ADD_ANIMAL_SUCCESS:
       return {
         error: null,
         loading: false,
       };
-    case ADD_PEOPLE_FAILURE:
+    case ADD_ANIMAL_FAILURE:
       return {
         error: action.payload.error,
         loading: false,

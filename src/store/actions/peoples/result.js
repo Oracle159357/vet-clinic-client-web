@@ -4,7 +4,7 @@ import {
   LOAD_PEOPLE_STARTED,
   LOAD_PEOPLE_SUCCESS,
   SET_PEOPLE_PAGE_COUNT,
-} from '../../constants/action-types';
+} from '../../constants/action-types/peoples';
 import { SetPeopleOptions } from './options';
 
 export const LoadPeopleStarted = () => ({

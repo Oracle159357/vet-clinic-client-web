@@ -1,4 +1,4 @@
-import { ADD_PEOPLE_FAILURE, ADD_PEOPLE_STARTED, ADD_PEOPLE_SUCCESS } from '../../../constants/action-types';
+import { ADD_PEOPLE_FAILURE, ADD_PEOPLE_STARTED, ADD_PEOPLE_SUCCESS } from '../../../constants/action-types/peoples';
 import { addFromData1 } from '../../../../api';
 
 const AddPeopleStarted = () => ({
