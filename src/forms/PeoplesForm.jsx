@@ -26,13 +26,13 @@ export default function PeoplesForm({
         //   .oneOf([true], 'You must accept the terms and conditions.'),
       })}
       onSubmit={async (values, actions) => {
-        const res = await onSubmit({
+        const errors = await onSubmit({
           ...initialData, ...values,
         });
-        if (res) {
+        if (errors) {
           actions.setSubmitting(false);
           actions.setStatus({
-            name: res.errors.name,
+            ...errors,
           });
         }
       }}

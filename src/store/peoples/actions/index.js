@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
 import addReducer from './add';
 import deleteReducer from './delete';
 import changeReducer from './change';

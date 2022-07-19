@@ -7,20 +7,20 @@ import '../Pages.css';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import TableWithRT from '../../table/v2/TableWithRT';
-import { useCustomButton } from '../../utils/hooks';
+import TableWithRT from 'table/v2/TableWithRT';
+import { useCustomButton } from 'utils/hooks';
 import {
   DefaultFilterForColumnNumber,
   DefaultFilterForColumnString,
-} from '../../table/v2/FiltersForRT';
-import { Modal, useModal } from '../../components/modal/Modal';
-import AnimalsForm from '../../forms/AnimalsForm';
+} from 'table/v2/FiltersForRT';
+import { Modal, useModal } from 'components/modal/Modal';
+import AnimalsForm from 'forms/AnimalsForm';
 
-import { addAnimal } from '../../store/actions/animals/actions/add';
-import { changeAnimal } from '../../store/actions/animals/actions/change';
-import { deleteAnimal } from '../../store/actions/animals/actions/delete';
-import { loadAnimal, setAnimalOptionsAndLoad } from '../../store/actions/animals/result';
-import { SetAnimalChecked } from '../../store/actions/animals/checked';
+import { setAnimalOptionsAndLoad, loadAnimal } from 'store/animals/result';
+import { setAnimalChecked } from 'store/animals/checked';
+import { addAnimal } from 'store/animals/actions/add';
+import { changeAnimal } from 'store/animals/actions/change';
+import { deleteAnimal } from 'store/animals/actions/delete';
 
 const mapStateToProps = ({ animals }) => ({
   data: animals.result.data,
@@ -37,7 +37,7 @@ const mapDispatchToProps = {
   onAddAnimal: addAnimal,
   onChangeAnimal: changeAnimal,
   onLoadAnimal: loadAnimal,
-  setChecked: (checked) => SetAnimalChecked(checked),
+  setChecked: (checked) => setAnimalChecked(checked),
   onSetAnimalOptionsAndLoad: (options) => setAnimalOptionsAndLoad(options),
 };
 
@@ -97,6 +97,10 @@ function AnimalsV2(
     deleteLoading,
   },
 ) {
+  const formattedData = useMemo(
+    () => data.map((el) => ({ ...el, birthDate: new Date(el.birthDate) })),
+    [data],
+  );
   const [resetChecked, setResetChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
@@ -120,12 +124,12 @@ function AnimalsV2(
   });
   const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, addData) => {
-      const result = await onAddAnimal(addData);
-      if (!(result && result.errors)) {
+      const dataFromAPi = await onAddAnimal(addData);
+      if (dataFromAPi.error === undefined) {
         resetChecked();
         toggleAddModal();
       }
-      return result;
+      return dataFromAPi.payload;
     },
     checked,
     refreshData: onLoadAnimal,
@@ -141,8 +145,8 @@ function AnimalsV2(
   });
 
   const editPeople = useMemo(
-    () => data?.find((el) => el.idKey === checked[0]),
-    [data, checked],
+    () => formattedData?.find((el) => el.idKey === checked[0]),
+    [formattedData, checked],
   );
   const load = useCallback(onSetAnimalOptionsAndLoad, [onSetAnimalOptionsAndLoad]);
   return (
@@ -200,7 +204,7 @@ function AnimalsV2(
       <div>
         <TableWithRT
           columns={columns}
-          data={data}
+          data={formattedData}
           fetchData={load}
           loading={loading}
           pageCount={pageCount}

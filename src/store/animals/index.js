@@ -1,14 +1,14 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
 import resultReducer from './result';
 import optionsReducer from './options';
 import actionsReducer from './actions';
 import checkedReducer from './checked';
 
-const peoplesReducer = combineReducers({
+const animalsReducer = combineReducers({
   result: resultReducer,
   actions: actionsReducer,
   checked: checkedReducer,
   options: optionsReducer,
 });
 
-export default peoplesReducer;
+export default animalsReducer;

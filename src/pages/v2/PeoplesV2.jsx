@@ -6,22 +6,22 @@ import '../Pages.css';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import TableWithRT from '../../table/v2/TableWithRT';
-import { useCustomButton } from '../../utils/hooks';
+import TableWithRT from 'table/v2/TableWithRT';
+import { useCustomButton } from 'utils/hooks';
 import {
   DefaultFilterForColumnNumber,
   DefaultFilterForColumnString,
   DefaultFilterForColumnBoolean,
   DefaultFilterForColumnDate,
-} from '../../table/v2/FiltersForRT';
-import { Modal, useModal } from '../../components/modal/Modal';
-import PeoplesForm from '../../forms/PeoplesForm';
+} from 'table/v2/FiltersForRT';
+import { Modal, useModal } from 'components/modal/Modal';
+import PeoplesForm from 'forms/PeoplesForm';
 
-import { addPeople } from '../../store/actions/peoples/actions/add';
-import { changePeople } from '../../store/actions/peoples/actions/change';
-import { deletePeople } from '../../store/actions/peoples/actions/delete';
-import { loadPeople, setPeopleOptionsAndLoad } from '../../store/actions/peoples/result';
-import { SetPeopleChecked } from '../../store/actions/peoples/checked';
+import { setPeopleOptionsAndLoad, loadPeopleV2 as loadPeople } from 'store/peoples/result';
+import { setPeopleChecked } from 'store/peoples/checked';
+import { addPeopleV2 } from 'store/peoples/actions/add';
+import { changePeopleV2 } from 'store/peoples/actions/change';
+import { deletePeopleV2 } from 'store/peoples/actions/delete';
 
 const mapStateToProps = ({ peoples }) => ({
   data: peoples.result.data,
@@ -34,11 +34,11 @@ const mapStateToProps = ({ peoples }) => ({
 });
 
 const mapDispatchToProps = {
-  onDeletePeople: deletePeople,
-  onAddPeople: addPeople,
-  onChangePeople: changePeople,
+  onDeletePeople: deletePeopleV2,
+  onAddPeople: addPeopleV2,
+  onChangePeople: changePeopleV2,
   onLoadPeople: loadPeople,
-  setChecked: (checked) => SetPeopleChecked(checked),
+  setChecked: (checked) => setPeopleChecked(checked),
   onSetPeopleOptionsAndLoad: (options) => setPeopleOptionsAndLoad(options),
 };
 
@@ -122,6 +122,10 @@ function PeoplesV2(
     deleteLoading,
   },
 ) {
+  const formattedData = useMemo(
+    () => data.map((el) => ({ ...el, birthDate: new Date(el.birthDate) })),
+    [data],
+  );
   const [resetChecked, setResetChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
@@ -145,11 +149,11 @@ function PeoplesV2(
   const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, addData) => {
       const dataFromAPi = await onAddPeople(addData);
-      if (dataFromAPi?.errors === undefined) {
+      if (dataFromAPi.error === undefined) {
         resetChecked();
         toggleAddModal();
       }
-      return dataFromAPi;
+      return dataFromAPi.payload;
     },
     checked,
     refreshData: onLoadPeople,
@@ -164,8 +168,8 @@ function PeoplesV2(
     refreshData: onLoadPeople,
   });
   const editPeople = useMemo(
-    () => data?.find((el) => el.id === checked[0]),
-    [data, checked],
+    () => formattedData?.find((el) => el.id === checked[0]),
+    [formattedData, checked],
   );
   const load = useCallback(onSetPeopleOptionsAndLoad, [onSetPeopleOptionsAndLoad]);
   return (
@@ -223,7 +227,7 @@ function PeoplesV2(
       <div>
         <TableWithRT
           columns={columns}
-          data={data}
+          data={formattedData}
           fetchData={load}
           loading={loading}
           pageCount={pageCount}

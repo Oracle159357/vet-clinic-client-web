@@ -27,10 +27,16 @@ export default function AnimalsForm({
           (number) => /^\d+(\.\d{1,2})?$/.test(number),
         ),
       })}
-      onSubmit={(values) => {
-        onSubmit({
+      onSubmit={async (values, actions) => {
+        const errors = await onSubmit({
           ...initialData, ...values,
         });
+        if (errors) {
+          actions.setSubmitting(false);
+          actions.setStatus({
+            ...errors,
+          });
+        }
       }}
     >
       <Form>

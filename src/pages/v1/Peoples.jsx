@@ -2,11 +2,11 @@ import React, { useMemo, useState } from 'react';
 import '../Pages.css';
 import {
   getData1, deleteFromData1ByIds, addFromData1, changeFromData1,
-} from '../../api';
-import Table from '../../table/v1/Table';
-import { useCustomButton, useData } from '../../utils/hooks';
-import { useModal, Modal } from '../../components/modal/Modal';
-import PeoplesForm from '../../forms/PeoplesForm';
+} from 'api';
+import Table from 'table/v1/Table';
+import { useCustomButton, useData } from 'utils/hooks';
+import { useModal, Modal } from 'components/modal/Modal';
+import PeoplesForm from 'forms/PeoplesForm';
 
 async function getData(options) {
   const result = await getData1(options);

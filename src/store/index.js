@@ -1,5 +1,11 @@
-import { legacy_createStore as createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import rootReducer from './reducers';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 
-export default createStore(rootReducer, applyMiddleware(thunk));
+import peoplesReducer from './peoples';
+import animalsReducer from './animals';
+
+const rootReducer = combineReducers({
+  peoples: peoplesReducer,
+  animals: animalsReducer,
+});
+
+export default configureStore({ reducer: rootReducer });

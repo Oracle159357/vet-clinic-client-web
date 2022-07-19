@@ -252,7 +252,7 @@ export async function addFromData1(data) {
 }
 
 export async function addFromData2(data) {
-  const findDuplicateName = data1.findIndex((animal) => animal.dogName === data.dogName);
+  const findDuplicateName = data2.findIndex((animal) => animal.dogName === data.dogName);
   if (findDuplicateName >= 0) {
     return {
       errors: {
