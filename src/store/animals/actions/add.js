@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { addFromData2 } from 'api';
 
-export const addAnimal = createAsyncThunk(
+export const addAnimalV2 = createAsyncThunk(
   'addAnimal',
   async (animal, { rejectWithValue }) => {
     const response = await addFromData2(animal);
@@ -19,15 +19,15 @@ export const addSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(addAnimal.fulfilled, (state) => {
+      .addCase(addAnimalV2.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
       })
-      .addCase(addAnimal.pending, (state) => {
+      .addCase(addAnimalV2.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(addAnimal.rejected, (state, action) => {
+      .addCase(addAnimalV2.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { deleteFromData2ByIdsTableV2 } from 'api';
 
-export const deleteAnimal = createAsyncThunk(
+export const deleteAnimalV2 = createAsyncThunk(
   'deleteAnimal',
   async (allChecked, { rejectWithValue }) => {
     const response = await deleteFromData2ByIdsTableV2(allChecked);
@@ -19,15 +19,15 @@ export const deleteSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(deleteAnimal.fulfilled, (state) => {
+      .addCase(deleteAnimalV2.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
       })
-      .addCase(deleteAnimal.pending, (state) => {
+      .addCase(deleteAnimalV2.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deleteAnimal.rejected, (state, action) => {
+      .addCase(deleteAnimalV2.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

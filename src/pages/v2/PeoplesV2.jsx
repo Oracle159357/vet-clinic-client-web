@@ -1,6 +1,7 @@
 import React, {
   useCallback,
-  useMemo, useState,
+  useMemo,
+  useState,
 } from 'react';
 import '../Pages.css';
 import { connect } from 'react-redux';
@@ -107,11 +108,11 @@ const columns = [
 
 function PeoplesV2(
   {
-    onDeletePeople,
     onAddPeople,
     onChangePeople,
-    onSetPeopleOptionsAndLoad,
+    onDeletePeople,
     onLoadPeople,
+    onSetPeopleOptionsAndLoad,
     setChecked,
     data,
     pageCount,
@@ -126,9 +127,11 @@ function PeoplesV2(
     () => data.map((el) => ({ ...el, birthDate: new Date(el.birthDate) })),
     [data],
   );
+
   const [resetChecked, setResetChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
+
   const { onClick: onAlertClick } = useCustomButton({
     action: (allSelected) => {
       // eslint-disable-next-line no-alert
@@ -138,14 +141,21 @@ function PeoplesV2(
     checked,
     refreshData: onLoadPeople,
   });
+
   const { onClick: onDeleteClick } = useCustomButton({
     action: async (allSelected) => {
-      await onDeletePeople(allSelected);
-      resetChecked();
+      const dataFromAPi = await onDeletePeople(allSelected);
+      if (dataFromAPi.error === undefined) {
+        resetChecked();
+      } else {
+        // eslint-disable-next-line no-alert
+        alert(dataFromAPi.payload);
+      }
     },
     checked,
     refreshData: onLoadPeople,
   });
+
   const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, addData) => {
       const dataFromAPi = await onAddPeople(addData);
@@ -158,19 +168,25 @@ function PeoplesV2(
     checked,
     refreshData: onLoadPeople,
   });
+
   const { onClick: onChangeCLick } = useCustomButton({
     action: async (allSelected, changeData) => {
-      await onChangePeople(changeData);
-      resetChecked();
-      toggleChangeModal();
+      const dataFromAPi = await onChangePeople(changeData);
+      if (dataFromAPi.error === undefined) {
+        resetChecked();
+        toggleChangeModal();
+      }
+      return dataFromAPi.payload;
     },
     checked,
     refreshData: onLoadPeople,
   });
+
   const editPeople = useMemo(
     () => formattedData?.find((el) => el.id === checked[0]),
     [formattedData, checked],
   );
+
   const load = useCallback(onSetPeopleOptionsAndLoad, [onSetPeopleOptionsAndLoad]);
   return (
     <div>

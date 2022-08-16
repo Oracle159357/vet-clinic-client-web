@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { MyInput } from '../components/form/customFormikComponents';
+import { MyInput, PeopleSelect } from '../components/form/customFormikComponents';
 import './Form.css';
 
 export default function AnimalsForm({
@@ -12,11 +12,7 @@ export default function AnimalsForm({
 }) {
   return (
     <Formik
-      initialValues={{
-        dogName: initialData.dogName,
-        height: initialData.height,
-        date: initialData.date,
-      }}
+      initialValues={initialData}
       validationSchema={Yup.object({
         dogName: Yup.string()
           .max(10, 'Must be 10 characters or less')
@@ -55,6 +51,11 @@ export default function AnimalsForm({
           name="date"
           type="date"
         />
+        <PeopleSelect
+          label="Owner Animal: "
+          name="ownerId"
+          placeholder="Choose the owner of your animal"
+        />
         <button
           disabled={statusOfDisable}
           type="submit"
@@ -67,7 +68,13 @@ export default function AnimalsForm({
   );
 }
 AnimalsForm.defaultProps = {
-  initialData: { dogName: '', height: 1, date: '2022-08-03' },
+  initialData: {
+    dogName: '',
+    height: 1,
+    date: '2022-08-03',
+    ownerId: null,
+  },
+  statusOfDisable: false,
 };
 
 AnimalsForm.propTypes = {
@@ -76,7 +83,8 @@ AnimalsForm.propTypes = {
     dogName: PropTypes.string.isRequired,
     height: PropTypes.number.isRequired,
     idKey: PropTypes.string,
+    ownerId: PropTypes.string,
   }),
   onSubmit: PropTypes.func.isRequired,
-  statusOfDisable: PropTypes.bool.isRequired,
+  statusOfDisable: PropTypes.bool,
 };

@@ -1,6 +1,8 @@
 import { useField, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { loadListOfPeople } from 'api';
+import './customFormikComponents.css';
 
 function FieldErrors({ name }) {
   const [field, meta] = useField(name);
@@ -58,11 +60,86 @@ export function MyCheckbox({ children, ...props }) {
     </div>
   );
 }
+
+export function MySelect({ label, isLoading, ...props }) {
+  const [field, , helper] = useField({ ...props });
+  return (
+    <div>
+      <label htmlFor={props.name}>{label}</label>
+      <select
+        style={{ width: '50%' }}
+        disabled={isLoading}
+        {...field}
+        value={field.value === null ? '' : field.value}
+        {...props}
+      >
+        {isLoading ? <option value="">Loading</option> : (
+          <>
+            <option key="placeholder" value="" disabled>{props.placeholder}</option>
+            {/* eslint-disable-next-line react/prop-types */}
+            {props.children}
+          </>
+        )}
+      </select>
+      {isLoading ? <div className="lds-dual-ring" /> : null}
+      {
+        (field.value === null || isLoading)
+          ? null
+          : <button type="button" onClick={() => helper.setValue(null)}>X</button>
+      }
+      <FieldErrors name={props.name} />
+    </div>
+  );
+}
+
+export function PeopleSelect({ name, label, placeholder }) {
+  const [allPeoples, setAllPeoples] = useState(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setAllPeoples(await loadListOfPeople());
+      setIsLoading(false);
+    })().catch((error) => {
+      throw error;
+    });
+  }, []);
+
+  return (
+    <div>
+      <MySelect
+        label={label}
+        name={name}
+        isLoading={isLoading}
+        placeholder={placeholder}
+      >
+        {!isLoading ? allPeoples?.map((people) => (
+          <option key={people.id} value={people.id}>{people.name}</option>
+        )) : null}
+      </MySelect>
+    </div>
+  );
+}
+
 MyInput.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 };
+
 MyCheckbox.propTypes = {
   children: PropTypes.node.isRequired,
   name: PropTypes.string.isRequired,
+};
+
+MySelect.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  placeholder: PropTypes.string.isRequired,
+};
+
+PeopleSelect.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  placeholder: PropTypes.string.isRequired,
 };

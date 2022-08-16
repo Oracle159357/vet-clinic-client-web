@@ -8,6 +8,7 @@ const generateData1 = (size) => new Array(size).fill(0).map(() => ({
   married: Math.random() < 0.5,
   birthDate: faker.date.past(100, '2020-01-01T00:00:00.000Z'),
 }));
+const data1 = generateData1(23);
 
 const generateData2 = (size) => new Array(size).fill(0).map(() => ({
   idKey: faker.datatype.uuid(),
@@ -15,7 +16,9 @@ const generateData2 = (size) => new Array(size).fill(0).map(() => ({
   age: faker.datatype.number({ min: 1, max: 20 }),
   height: Math.random() * (10 - 1) + 1,
   birthDate: faker.date.past(20, '2020-01-01T00:00:00.000Z'),
+  owner: data1[faker.datatype.number({ min: 0, max: data1.length - 1 })],
 }));
+const data2 = generateData2(22);
 
 const baseTypeOfColumn = {
   name: 'string',
@@ -24,6 +27,7 @@ const baseTypeOfColumn = {
   birthDate: 'date',
   dogName: 'string',
   height: 'number',
+  'owner.name': 'string',
 };
 
 function process(data, options) {
@@ -34,7 +38,7 @@ function process(data, options) {
     if (filters !== undefined && filters.length !== 0) {
       const allFilter = filters;
       filteredData = data.filter((el) => allFilter.every(({ value, id }) => {
-        const currentValue = el[id];
+        const currentValue = _.get(el, id);
         const typeOfColumn = baseTypeOfColumn[id];
         if (typeOfColumn === 'boolean') {
           const booleanLabels = { true: true, false: false };
@@ -106,11 +110,16 @@ function process(data, options) {
   } else {
     sortedData = filteredData;
   }
-  const resultData = sortedData.filter((item, index) => {
-    const fromIndex = paging.page * paging.size;
-    const toIndex = (paging.page + 1) * paging.size;
-    return index >= fromIndex && index < toIndex;
-  });
+  let resultData;
+  if (paging !== undefined) {
+    resultData = sortedData.filter((item, index) => {
+      const fromIndex = paging.page * paging.size;
+      const toIndex = (paging.page + 1) * paging.size;
+      return index >= fromIndex && index < toIndex;
+    });
+  } else {
+    resultData = sortedData;
+  }
   const result = { resultData, dataLength: sortedData.length };
   return JSON.parse(JSON.stringify(result));
 }
@@ -147,16 +156,18 @@ function addFromDataPerson(data1, data) {
   data1.push(newData);
 }
 
-function addFromDataAnimal(data1, data) {
+function addFromDataAnimal(data2, data) {
   const formattedData = JSON.parse(JSON.stringify(data));
+  const peopleByOwner = data1.find((people) => people.id === formattedData.ownerId);
   const newData = {
     idKey: faker.datatype.uuid(),
     dogName: formattedData.dogName,
     age: calculateAge(new Date(formattedData.date)),
     height: formattedData.height,
     birthDate: new Date(formattedData.date),
+    owner: peopleByOwner,
   };
-  data1.push(newData);
+  data2.push(newData);
 }
 
 function changeDataPerson(allData, changedData) {
@@ -174,12 +185,14 @@ function changeDataPerson(allData, changedData) {
 
 function changeDataAnimal(allData, changedData) {
   const formattedChangedData = JSON.parse(JSON.stringify(changedData));
+  const peopleByOwner = data1.find((people) => people.id === formattedChangedData.ownerId);
   const newData = {
     idKey: formattedChangedData.idKey,
     dogName: formattedChangedData.dogName,
     age: calculateAge(new Date(formattedChangedData.date)),
     height: formattedChangedData.height,
     birthDate: new Date(formattedChangedData.date),
+    owner: peopleByOwner,
   };
   const findIndexElement = allData
     .findIndex((animal) => animal.idKey === formattedChangedData.idKey);
@@ -187,13 +200,10 @@ function changeDataAnimal(allData, changedData) {
   allData[findIndexElement] = newData;
 }
 
-const data1 = generateData1(22);
-const data2 = generateData2(22);
-
 export async function getData1(options) {
   return new Promise((res) => {
     setTimeout(() => {
-      const result = process(data1, options);
+      const result = process(data1, options || {});
       res(result);
     }, 1000);
   });
@@ -284,4 +294,9 @@ export async function changeFromData2(data) {
       res(undefined);
     }, 1000);
   });
+}
+
+export async function loadListOfPeople() {
+  const { resultData } = await getData1();
+  return resultData.map((people) => _.pick(people, ['id', 'name']));
 }

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { changeFromData2 } from 'api';
 
-export const changeAnimal = createAsyncThunk(
+export const changeAnimalV2 = createAsyncThunk(
   'changeAnimal',
   async (animal, { rejectWithValue }) => {
     const response = await changeFromData2(animal);
@@ -19,15 +19,15 @@ export const changeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(changeAnimal.fulfilled, (state) => {
+      .addCase(changeAnimalV2.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
       })
-      .addCase(changeAnimal.pending, (state) => {
+      .addCase(changeAnimalV2.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(changeAnimal.rejected, (state, action) => {
+      .addCase(changeAnimalV2.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

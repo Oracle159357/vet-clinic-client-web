@@ -18,9 +18,9 @@ import AnimalsForm from 'forms/AnimalsForm';
 
 import { setAnimalOptionsAndLoad, loadAnimal } from 'store/animals/result';
 import { setAnimalChecked } from 'store/animals/checked';
-import { addAnimal } from 'store/animals/actions/add';
-import { changeAnimal } from 'store/animals/actions/change';
-import { deleteAnimal } from 'store/animals/actions/delete';
+import { addAnimalV2 } from 'store/animals/actions/add';
+import { changeAnimalV2 } from 'store/animals/actions/change';
+import { deleteAnimalV2 } from 'store/animals/actions/delete';
 
 const mapStateToProps = ({ animals }) => ({
   data: animals.result.data,
@@ -33,9 +33,9 @@ const mapStateToProps = ({ animals }) => ({
 });
 
 const mapDispatchToProps = {
-  onDeleteAnimal: deleteAnimal,
-  onAddAnimal: addAnimal,
-  onChangeAnimal: changeAnimal,
+  onAddAnimal: addAnimalV2,
+  onChangeAnimal: changeAnimalV2,
+  onDeleteAnimal: deleteAnimalV2,
   onLoadAnimal: loadAnimal,
   setChecked: (checked) => setAnimalChecked(checked),
   onSetAnimalOptionsAndLoad: (options) => setAnimalOptionsAndLoad(options),
@@ -78,13 +78,25 @@ const columns = [
       </div>
     ),
   },
+  {
+    Header: 'Owner',
+    accessor: 'owner.name',
+    Filter: DefaultFilterForColumnString,
+    // eslint-disable-next-line react/prop-types
+    Cell: ({ value }) => (
+      <div className="text-cell-center">
+        {/* eslint-disable-next-line react/prop-types */}
+        {typeof value === 'undefined' ? '-' : value}
+      </div>
+    ),
+  },
 ];
 
 function AnimalsV2(
   {
-    onDeleteAnimal,
     onAddAnimal,
     onChangeAnimal,
+    onDeleteAnimal,
     onSetAnimalOptionsAndLoad,
     onLoadAnimal,
     setChecked,
@@ -101,6 +113,7 @@ function AnimalsV2(
     () => data.map((el) => ({ ...el, birthDate: new Date(el.birthDate) })),
     [data],
   );
+
   const [resetChecked, setResetChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
@@ -114,14 +127,7 @@ function AnimalsV2(
     checked,
     refreshData: onLoadAnimal,
   });
-  const { onClick: onDeleteClick } = useCustomButton({
-    action: async (allSelected) => {
-      await onDeleteAnimal(allSelected);
-      resetChecked();
-    },
-    checked,
-    refreshData: onLoadAnimal,
-  });
+
   const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, addData) => {
       const dataFromAPi = await onAddAnimal(addData);
@@ -134,20 +140,39 @@ function AnimalsV2(
     checked,
     refreshData: onLoadAnimal,
   });
+
   const { onClick: onChangeCLick } = useCustomButton({
     action: async (allSelected, changeData) => {
-      await onChangeAnimal(changeData);
-      resetChecked();
-      toggleChangeModal();
+      const dataFromAPi = await onChangeAnimal(changeData);
+      if (dataFromAPi.error === undefined) {
+        resetChecked();
+        toggleChangeModal();
+      }
+      return dataFromAPi.payload;
     },
     checked,
     refreshData: onLoadAnimal,
   });
 
-  const editPeople = useMemo(
+  const { onClick: onDeleteClick } = useCustomButton({
+    action: async (allSelected) => {
+      const dataFromAPi = await onDeleteAnimal(allSelected);
+      if (dataFromAPi.error === undefined) {
+        resetChecked();
+      } else {
+        // eslint-disable-next-line no-alert
+        alert(dataFromAPi.payload);
+      }
+    },
+    checked,
+    refreshData: onLoadAnimal,
+  });
+
+  const editAnimal = useMemo(
     () => formattedData?.find((el) => el.idKey === checked[0]),
     [formattedData, checked],
   );
+
   const load = useCallback(onSetAnimalOptionsAndLoad, [onSetAnimalOptionsAndLoad]);
   return (
     <div>
@@ -167,11 +192,10 @@ function AnimalsV2(
           <AnimalsForm
             statusOfDisable={changeLoading}
             onSubmit={onChangeCLick}
-            initialData={editPeople && {
-              dogName: editPeople.dogName,
-              height: editPeople.height,
-              date: editPeople.birthDate.toISOString().substring(0, 10),
-              idKey: editPeople.idKey,
+            initialData={editAnimal && {
+              ...editAnimal,
+              date: editAnimal.birthDate.toISOString().substring(0, 10),
+              ownerId: editAnimal.owner?.id ?? null,
             }}
           />
         </Modal>
