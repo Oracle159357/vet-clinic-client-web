@@ -134,6 +134,7 @@ function AnimalsV2(
       if (dataFromAPi.error === undefined) {
         resetChecked();
         toggleAddModal();
+        return undefined;
       }
       return dataFromAPi.payload;
     },
@@ -147,6 +148,7 @@ function AnimalsV2(
       if (dataFromAPi.error === undefined) {
         resetChecked();
         toggleChangeModal();
+        return undefined;
       }
       return dataFromAPi.payload;
     },
@@ -159,10 +161,11 @@ function AnimalsV2(
       const dataFromAPi = await onDeleteAnimal(allSelected);
       if (dataFromAPi.error === undefined) {
         resetChecked();
-      } else {
-        // eslint-disable-next-line no-alert
-        alert(dataFromAPi.payload);
+        return undefined;
       }
+      // eslint-disable-next-line no-alert
+      alert(dataFromAPi.payload);
+      return undefined;
     },
     checked,
     refreshData: onLoadAnimal,

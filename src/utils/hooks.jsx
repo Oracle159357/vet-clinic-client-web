@@ -60,7 +60,10 @@ export function useDataV2({ getData }) {
 export function useCustomButton({ action, checked, refreshData }) {
   const onClick = async (arg) => {
     const result = await action(checked, arg);
-    refreshData();
+    const dataFromAPi = await refreshData();
+    if (dataFromAPi?.error) {
+      throw new Error(`Data loading failed. Errors name: ${dataFromAPi.payload}`);
+    }
     return result;
   };
 

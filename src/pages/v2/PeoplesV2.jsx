@@ -147,10 +147,9 @@ function PeoplesV2(
       const dataFromAPi = await onDeletePeople(allSelected);
       if (dataFromAPi.error === undefined) {
         resetChecked();
-      } else {
-        // eslint-disable-next-line no-alert
-        alert(dataFromAPi.payload);
+        return undefined;
       }
+      return dataFromAPi.payload;
     },
     checked,
     refreshData: onLoadPeople,
@@ -162,6 +161,7 @@ function PeoplesV2(
       if (dataFromAPi.error === undefined) {
         resetChecked();
         toggleAddModal();
+        return undefined;
       }
       return dataFromAPi.payload;
     },
@@ -175,6 +175,7 @@ function PeoplesV2(
       if (dataFromAPi.error === undefined) {
         resetChecked();
         toggleChangeModal();
+        return undefined;
       }
       return dataFromAPi.payload;
     },

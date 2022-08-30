@@ -1,6 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import {
-  addFromData2, changeFromData2, deleteFromData2ByIds, getData2,
+  getAnimal,
+  updateAnimal,
+  deleteAnimal,
+  addNewAnimal,
 } from 'api';
 import Table from 'table/v1/Table';
 import { useCustomButton, useData } from 'utils/hooks';
@@ -9,7 +12,11 @@ import '../Pages.css';
 import AnimalsForm from 'forms/AnimalsForm';
 
 async function getData(options) {
-  const result = await getData2(options);
+  const formattedOptions = {
+    ...options,
+    sorting: options.sorting.map((el) => ({ id: el.key, desc: el.direction === 'desc' })),
+  };
+  const result = await getAnimal(formattedOptions);
   const formattedData = result.resultData
     .map((el) => ({ ...el, birthDate: new Date(el.birthDate) }));
   return { ...result, resultData: formattedData };
@@ -29,8 +36,13 @@ function Animals() {
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
   const { onClick: onDeleteClick } = useCustomButton({
     action: async (allSelected) => {
-      await deleteFromData2ByIds(allSelected);
-      setChecked(new Set());
+      try {
+        await deleteAnimal([...allSelected]);
+        setChecked(new Set());
+        return undefined;
+      } catch (error) {
+        return error.payload;
+      }
     },
     checked,
     refreshData,
@@ -46,18 +58,28 @@ function Animals() {
   });
   const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, data) => {
-      await addFromData2(data);
-      setChecked(new Set());
-      toggleAddModal();
+      try {
+        await addNewAnimal(data);
+        setChecked(new Set());
+        toggleAddModal();
+        return undefined;
+      } catch (error) {
+        return error.payload;
+      }
     },
     checked,
     refreshData,
   });
   const { onClick: onChangeCLick } = useCustomButton({
     action: async (allSelected, data) => {
-      await changeFromData2(data);
-      setChecked(new Set());
-      toggleChangeModal();
+      try {
+        await updateAnimal(data);
+        setChecked(new Set());
+        toggleChangeModal();
+        return undefined;
+      } catch (error) {
+        return error.payload;
+      }
     },
     checked,
     refreshData,

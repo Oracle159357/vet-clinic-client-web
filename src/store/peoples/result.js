@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getData1 } from 'api';
+import { getPeople } from 'api';
 import { setPeopleOptions } from './options';
 
 const initialState = {
@@ -11,18 +11,26 @@ const initialState = {
 
 export const loadPeopleV2 = createAsyncThunk(
   'loadPeople',
-  async (_, { getState }) => {
+  async (_, { getState, rejectWithValue }) => {
     const {
       pageSize,
       pageIndex,
       sortBy,
       filters,
     } = getState().peoples.options;
-    const data = await getData1({
-      paging: { page: pageIndex, size: pageSize }, sorting: sortBy, filters,
-    });
-    const pageCount = Math.ceil(data.dataLength / pageSize);
-    return { data: data.resultData, pageCount };
+    try {
+      const data = await getPeople(
+        {
+          paging: { page: pageIndex, size: pageSize },
+          sorting: sortBy,
+          filters,
+        },
+      );
+      const pageCount = Math.ceil(data.dataLength / pageSize);
+      return { data: data.resultData, pageCount };
+    } catch (error) {
+      return rejectWithValue(error.payload);
+    }
   },
 );
 

@@ -1,14 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { changeFromData1 } from 'api';
+import { updatePeople } from 'api';
 
 export const changePeopleV2 = createAsyncThunk(
   'changePeople',
   async (people, { rejectWithValue }) => {
-    const response = await changeFromData1(people);
-    if (response === undefined) {
-      return undefined;
+    try {
+      const data = await updatePeople(people);
+      return { idChangePerson: data };
+    } catch (error) {
+      return rejectWithValue(error.payload);
     }
-    return rejectWithValue(response.errors);
   },
 );
 

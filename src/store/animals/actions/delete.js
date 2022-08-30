@@ -1,14 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { deleteFromData2ByIdsTableV2 } from 'api';
+import { deleteAnimal } from 'api';
 
 export const deleteAnimalV2 = createAsyncThunk(
   'deleteAnimal',
   async (allChecked, { rejectWithValue }) => {
-    const response = await deleteFromData2ByIdsTableV2(allChecked);
-    if (response === undefined) {
-      return undefined;
+    try {
+      const data = await deleteAnimal(allChecked);
+      return { idDeletePerson: data };
+    } catch (error) {
+      return rejectWithValue(error.payload);
     }
-    return rejectWithValue(response.errors);
   },
 );
 

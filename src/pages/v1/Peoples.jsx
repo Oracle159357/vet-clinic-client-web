@@ -1,15 +1,22 @@
 import React, { useMemo, useState } from 'react';
 import '../Pages.css';
 import {
-  getData1, deleteFromData1ByIds, addFromData1, changeFromData1,
+  addNewPeople,
+  deletePeople,
+  getPeople,
+  updatePeople,
 } from 'api';
 import Table from 'table/v1/Table';
 import { useCustomButton, useData } from 'utils/hooks';
-import { useModal, Modal } from 'components/modal/Modal';
+import { Modal, useModal } from 'components/modal/Modal';
 import PeoplesForm from 'forms/PeoplesForm';
 
 async function getData(options) {
-  const result = await getData1(options);
+  const formattedOptions = {
+    ...options,
+    sorting: options.sorting.map((el) => ({ id: el.key, desc: el.direction === 'desc' })),
+  };
+  const result = await getPeople(formattedOptions);
   const formattedData = result.resultData
     .map((el) => ({ ...el, birthDate: new Date(el.birthDate) }));
   return { ...result, resultData: formattedData };
@@ -28,8 +35,13 @@ function Peoples() {
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
   const { onClick: onDeleteClick } = useCustomButton({
     action: async (allSelected) => {
-      await deleteFromData1ByIds(allSelected);
-      setChecked(new Set());
+      try {
+        await deletePeople([...allSelected]);
+        setChecked(new Set());
+        return undefined;
+      } catch (error) {
+        return error.payload;
+      }
     },
     checked,
     refreshData,
@@ -46,21 +58,28 @@ function Peoples() {
   });
   const { onClick: onAddClick } = useCustomButton({
     action: async (allSelected, data) => {
-      const result = await addFromData1(data);
-      if (!(result && result.errors)) {
+      try {
+        await addNewPeople(data);
         setChecked(new Set());
         toggleAddModal();
+        return undefined;
+      } catch (error) {
+        return error.payload;
       }
-      return result;
     },
     checked,
     refreshData,
   });
   const { onClick: onChangeCLick } = useCustomButton({
     action: async (allSelected, data) => {
-      await changeFromData1(data);
-      setChecked(new Set());
-      toggleChangeModal();
+      try {
+        await updatePeople(data);
+        setChecked(new Set());
+        toggleChangeModal();
+        return undefined;
+      } catch (error) {
+        return error.payload;
+      }
     },
     checked,
     refreshData,

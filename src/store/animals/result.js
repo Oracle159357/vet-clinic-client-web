@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getData2 } from 'api';
+import { getAnimal } from 'api';
 import { setAnimalOptions } from './options';
 
 const initialState = {
@@ -11,18 +11,26 @@ const initialState = {
 
 export const loadAnimal = createAsyncThunk(
   'loadAnimal',
-  async (_, { getState }) => {
+  async (_, { getState, rejectWithValue }) => {
     const {
       pageSize,
       pageIndex,
       sortBy,
       filters,
     } = getState().animals.options;
-    const data = await getData2({
-      paging: { page: pageIndex, size: pageSize }, sorting: sortBy, filters,
-    });
-    const pageCount = Math.ceil(data.dataLength / pageSize);
-    return { data: data.resultData, pageCount };
+    try {
+      const data = await getAnimal(
+        {
+          paging: { page: pageIndex, size: pageSize },
+          sorting: sortBy,
+          filters,
+        },
+      );
+      const pageCount = Math.ceil(data.dataLength / pageSize);
+      return { data: data.resultData, pageCount };
+    } catch (error) {
+      return rejectWithValue(error.payload);
+    }
   },
 );
 
