@@ -16,6 +16,7 @@ export default function PeoplesForm({
         name: initialData.name,
         married: initialData.married,
         date: initialData.date,
+        weight: initialData.weight,
       }}
       validationSchema={Yup.object({
         name: Yup.string()
@@ -43,6 +44,11 @@ export default function PeoplesForm({
           name="name"
           type="text"
         />
+        <MyInput
+          label="Weight: "
+          name="weight"
+          type="number"
+        />
         <MyCheckbox
           name="married"
         >
@@ -66,7 +72,12 @@ export default function PeoplesForm({
 }
 
 PeoplesForm.defaultProps = {
-  initialData: { name: '', married: false, date: '2022-08-03' },
+  initialData: {
+    name: '',
+    married: false,
+    date: '2022-08-03',
+    weight: 0,
+  },
 };
 
 PeoplesForm.propTypes = {
@@ -75,6 +86,7 @@ PeoplesForm.propTypes = {
     name: PropTypes.string.isRequired,
     married: PropTypes.bool.isRequired,
     id: PropTypes.string,
+    weight: PropTypes.number.isRequired,
   }),
   onSubmit: PropTypes.func.isRequired,
   statusOfDisable: PropTypes.bool.isRequired,

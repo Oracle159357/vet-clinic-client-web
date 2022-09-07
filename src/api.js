@@ -47,7 +47,7 @@ export async function addNewAnimal(newAnimal) {
 }
 
 export async function updatePeople(people) {
-  return apiCall('/people/update', { data: people });
+  return apiCall('/people/change', { data: people });
 }
 
 export async function updateAnimal(animal) {
@@ -55,7 +55,7 @@ export async function updateAnimal(animal) {
 }
 
 export async function deletePeople(ids) {
-  return apiCall('/people/delete', { data: ids });
+  return apiCall('/people/remove', { data: ids });
 }
 
 export async function deleteAnimal(ids) {

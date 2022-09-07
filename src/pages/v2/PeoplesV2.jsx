@@ -56,8 +56,8 @@ const columns = [
     ),
   },
   {
-    Header: 'Age',
-    accessor: 'age',
+    Header: 'Weight',
+    accessor: 'weight',
     Filter: DefaultFilterForColumnNumber,
     // eslint-disable-next-line react/prop-types
     Cell: ({ value }) => (
@@ -208,10 +208,8 @@ function PeoplesV2(
             statusOfDisable={changeLoading}
             onSubmit={onChangeCLick}
             initialData={editPeople && {
-              name: editPeople.name,
-              married: editPeople.married,
+              ...editPeople,
               date: editPeople.birthDate.toISOString().substring(0, 10),
-              id: editPeople.id,
             }}
           />
         </Modal>
@@ -236,7 +234,7 @@ function PeoplesV2(
             disabled={!checked?.length || deleteLoading}
             onClick={onDeleteClick}
           >
-            Delete Person
+            Remove Person
           </button>
           <button type="button" className="button-default" onClick={onAlertClick}>Alert People</button>
         </div>

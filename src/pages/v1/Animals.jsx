@@ -123,7 +123,7 @@ function Animals() {
         <Table
           data={dataTable}
           nameOfId="idKey"
-          columns={[{ key: 'age', name: 'Age', type: 'number' },
+          columns={[{ key: 'weight', name: 'Weight', type: 'number' },
             { key: 'dogName', name: 'Dog name', type: 'string' },
             {
               key: 'height', name: 'Height', type: 'number', format: (cellValue) => new Intl.NumberFormat('ru-RU', { style: 'decimal', maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(cellValue),
