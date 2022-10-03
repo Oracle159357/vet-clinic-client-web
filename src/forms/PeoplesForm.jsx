@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { MyCheckbox, MyInput } from '../components/form/customFormikComponents';
+import { MyCheckbox, MyDateInput, MyInput } from '../components/form/customFormikComponents';
 import './Form.css';
 
 export default function PeoplesForm({
@@ -12,12 +12,7 @@ export default function PeoplesForm({
 }) {
   return (
     <Formik
-      initialValues={{
-        name: initialData.name,
-        married: initialData.married,
-        date: initialData.date,
-        weight: initialData.weight,
-      }}
+      initialValues={initialData}
       validationSchema={Yup.object({
         name: Yup.string()
           .max(10, 'Must be 10 characters or less')
@@ -54,9 +49,9 @@ export default function PeoplesForm({
         >
           Married:
         </MyCheckbox>
-        <MyInput
-          label="Date: "
-          name="date"
+        <MyDateInput
+          label="Birthdate: "
+          name="birthDate"
           type="date"
         />
         <button
@@ -75,14 +70,14 @@ PeoplesForm.defaultProps = {
   initialData: {
     name: '',
     married: false,
-    date: '2022-08-03',
+    birthDate: '2022-09-21T14:38:08.280Z',
     weight: 0,
   },
 };
 
 PeoplesForm.propTypes = {
   initialData: PropTypes.shape({
-    date: PropTypes.string.isRequired,
+    birthDate: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     married: PropTypes.bool.isRequired,
     id: PropTypes.string,

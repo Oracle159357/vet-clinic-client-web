@@ -23,6 +23,7 @@ import { setPeopleChecked } from 'store/peoples/checked';
 import { addPeopleV2 } from 'store/peoples/actions/add';
 import { changePeopleV2 } from 'store/peoples/actions/change';
 import { deletePeopleV2 } from 'store/peoples/actions/delete';
+import { convertToDateUI } from 'utils/convertDate';
 
 const mapStateToProps = ({ peoples }) => ({
   data: peoples.result.data,
@@ -70,6 +71,7 @@ const columns = [
     Header: 'Married',
     accessor: 'married',
     Filter: DefaultFilterForColumnBoolean,
+    filter: 'equals',
     // eslint-disable-next-line react/prop-types
     Cell: ({ value }) => (
       <div className="text-cell-center">
@@ -82,26 +84,11 @@ const columns = [
     accessor: 'birthDate',
     Filter: DefaultFilterForColumnDate,
     // eslint-disable-next-line react/prop-types
-    Cell: ({ value }) => {
-      const formatter = useMemo(
-        () => new Intl.DateTimeFormat(
-          'ru',
-          {
-            year: 'numeric',
-            weekday: 'short',
-            month: 'numeric',
-            day: 'numeric',
-          },
-        ),
-        [],
-      );
-
-      return (
-        <div className="text-cell-center">
-          {formatter.format(value)}
-        </div>
-      );
-    },
+    Cell: ({ value }) => (
+      <div className="text-cell-center">
+        {convertToDateUI(value, 'Europe/Kiev')}
+      </div>
+    ),
   },
 
 ];
@@ -123,11 +110,6 @@ function PeoplesV2(
     deleteLoading,
   },
 ) {
-  const formattedData = useMemo(
-    () => data.map((el) => ({ ...el, birthDate: new Date(el.birthDate) })),
-    [data],
-  );
-
   const [resetChecked, setResetChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
@@ -184,8 +166,8 @@ function PeoplesV2(
   });
 
   const editPeople = useMemo(
-    () => formattedData?.find((el) => el.id === checked[0]),
-    [formattedData, checked],
+    () => data?.find((el) => el.id === checked[0]),
+    [data, checked],
   );
 
   const load = useCallback(onSetPeopleOptionsAndLoad, [onSetPeopleOptionsAndLoad]);
@@ -207,10 +189,7 @@ function PeoplesV2(
           <PeoplesForm
             statusOfDisable={changeLoading}
             onSubmit={onChangeCLick}
-            initialData={editPeople && {
-              ...editPeople,
-              date: editPeople.birthDate.toISOString().substring(0, 10),
-            }}
+            initialData={editPeople}
           />
         </Modal>
       </div>
@@ -242,7 +221,7 @@ function PeoplesV2(
       <div>
         <TableWithRT
           columns={columns}
-          data={formattedData}
+          data={data}
           fetchData={load}
           loading={loading}
           pageCount={pageCount}

@@ -83,7 +83,10 @@ export default function TableWithRT(
   const onFetchDataDebounced = useAsyncDebounce(fetchData, 100);
   useEffect(() => {
     onFetchDataDebounced({
-      pageIndex, pageSize, sortBy, filters,
+      pageIndex,
+      pageSize,
+      sortBy: sortBy.length ? sortBy : undefined,
+      filters: filters.length ? filters : undefined,
     });
   }, [onFetchDataDebounced, pageIndex, pageSize, sortBy, filters]);
 
@@ -197,6 +200,7 @@ export default function TableWithRT(
           {[10, 20, 30, 40, 50].map((currentPageSize) => (
             <option key={currentPageSize} value={currentPageSize}>
               Show
+              {' '}
               {currentPageSize}
             </option>
           ))}

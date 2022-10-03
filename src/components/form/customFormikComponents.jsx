@@ -2,6 +2,8 @@ import { useField, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { loadListOfPeople } from 'api';
+import { convertToDateServer, convertToDateUI } from 'utils/convertDate';
+
 import './customFormikComponents.css';
 
 function FieldErrors({ name }) {
@@ -44,6 +46,28 @@ export function MyInput({ label, ...props }) {
     </>
   );
 }
+
+export function MyDateInput(props) {
+  const { setFieldValue } = useFormikContext();
+  const [field] = useField(props);
+  const currentTimeZone = 'Europe/Kiev';
+
+  return (
+    <MyInput
+      {...props}
+      value={convertToDateUI(field.value, currentTimeZone)}
+      onChange={(event) => {
+        const dateToServer = convertToDateServer(event.target.value, currentTimeZone);
+        return setFieldValue(field.name, dateToServer);
+      }}
+    />
+  );
+}
+
+MyInput.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+};
 
 export function MyCheckbox({ children, ...props }) {
   const [field] = useField({ ...props, type: 'checkbox' });
@@ -120,11 +144,6 @@ export function PeopleSelect({ name, label, placeholder }) {
     </div>
   );
 }
-
-MyInput.propTypes = {
-  label: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-};
 
 MyCheckbox.propTypes = {
   children: PropTypes.node.isRequired,

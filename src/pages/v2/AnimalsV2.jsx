@@ -197,7 +197,7 @@ function AnimalsV2(
             onSubmit={onChangeCLick}
             initialData={editAnimal && {
               ...editAnimal,
-              date: editAnimal.birthDate.toISOString().substring(0, 10),
+              birthDate: editAnimal.birthDate.toISOString().substring(0, 10),
               ownerId: editAnimal.owner?.id ?? null,
             }}
           />

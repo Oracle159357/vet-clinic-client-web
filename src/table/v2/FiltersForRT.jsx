@@ -1,5 +1,6 @@
 import { React } from 'react';
 import PropTypes from 'prop-types';
+import { convertToDateUI, convertToDateServer } from 'utils/convertDate';
 
 // eslint-disable-next-line react/prop-types
 export function DefaultFilterForColumnString({
@@ -30,28 +31,39 @@ DefaultFilterForColumnString.defaultProps = {
   column: undefined,
 };
 
+const labelsToValues = new Map();
+labelsToValues.set('true', true);
+labelsToValues.set('false', false);
+labelsToValues.set('empty', undefined);
+
+const valuesToLabels = new Map();
+valuesToLabels.set(true, 'true');
+valuesToLabels.set(false, 'false');
+valuesToLabels.set(undefined, 'empty');
+
 export function DefaultFilterForColumnBoolean({
   column: {
     setFilter,
+    filterValue,
   },
 }) {
-  const booleanLabels = { true: 'true', false: 'false', null: 'null' };
   return (
     <select
-      onChange={(e) => setFilter(booleanLabels[e.target.value])}
-      defaultValue="null"
+      onChange={(e) => setFilter(labelsToValues.get(e.target.value))}
+      value={valuesToLabels.get(filterValue)}
       className="filter-margin-top"
     >
       <option value="true">✔️</option>
       <option value="false">❌</option>
-      <option value="null">All</option>
+      <option value="empty">All</option>
     </select>
   );
 }
 
 DefaultFilterForColumnBoolean.propTypes = {
   column: PropTypes.shape({
-    setFilter: PropTypes.func,
+    setFilter: PropTypes.func.isRequired,
+    filterValue: PropTypes.bool,
   }),
 };
 
@@ -65,20 +77,43 @@ export function DefaultFilterForColumnDate({
     setFilter,
   },
 }) {
+  const currentTimeZone = 'Europe/Kiev';
   return (
     <div className="date-table-filter">
       <input
         type="date"
         className="filter-margin-top"
-        value={filterValue?.from ?? ''}
-        onChange={(e) => setFilter({ ...filterValue, from: e.target.value === '' ? undefined : e.target.value })}
+        value={convertToDateUI(filterValue?.from, currentTimeZone) ?? ''}
+        onChange={(e) => {
+          if (e.target.value === '' && filterValue.to === undefined) {
+            setFilter(undefined);
+          } else {
+            setFilter(
+              {
+                ...filterValue,
+                from: e.target.value === '' ? undefined : convertToDateServer(e.target.value, currentTimeZone),
+              },
+            );
+          }
+        }}
       />
       <span>  -  </span>
       <input
         type="date"
         className="filter-margin-top"
-        value={filterValue?.to ?? ''}
-        onChange={(e) => setFilter({ ...filterValue, to: e.target.value === '' ? undefined : e.target.value })}
+        value={convertToDateUI(filterValue?.to, currentTimeZone) ?? ''}
+        onChange={(e) => {
+          if (e.target.value === '' && filterValue.from === undefined) {
+            setFilter(undefined);
+          } else {
+            setFilter(
+              {
+                ...filterValue,
+                to: e.target.value === '' ? undefined : convertToDateServer(e.target.value, currentTimeZone),
+              },
+            );
+          }
+        }}
       />
     </div>
   );
@@ -86,7 +121,10 @@ export function DefaultFilterForColumnDate({
 
 DefaultFilterForColumnDate.propTypes = {
   column: PropTypes.shape({
-    filterValue: PropTypes.string,
+    filterValue: PropTypes.shape({
+      from: PropTypes.string,
+      to: PropTypes.string,
+    }),
     setFilter: PropTypes.func,
   }),
 };
@@ -108,10 +146,16 @@ export function DefaultFilterForColumnNumber({
         min="1"
         type="number"
         value={filterValue?.from?.toString() ?? ''}
-        onChange={(e) => setFilter({
-          ...filterValue,
-          from: e.target.value === '' ? undefined : parseInt(e.target.value, 10),
-        })}
+        onChange={(e) => {
+          if (e.target.value === '' && filterValue.to === undefined) {
+            setFilter(undefined);
+          } else {
+            setFilter({
+              ...filterValue,
+              from: e.target.value === '' ? undefined : parseInt(e.target.value, 10),
+            });
+          }
+        }}
         className="filter-margin-top"
       />
       <span>  -  </span>
@@ -120,7 +164,16 @@ export function DefaultFilterForColumnNumber({
         type="number"
         min="1"
         value={filterValue?.to?.toString() ?? ''}
-        onChange={(e) => setFilter({ ...filterValue, to: e.target.value === '' ? undefined : parseInt(e.target.value, 10) })}
+        onChange={(e) => {
+          if (e.target.value === '' && filterValue.from === undefined) {
+            setFilter(undefined);
+          } else {
+            setFilter({
+              ...filterValue,
+              to: e.target.value === '' ? undefined : parseInt(e.target.value, 10),
+            });
+          }
+        }}
         className="filter-margin-top"
       />
     </div>
@@ -128,7 +181,10 @@ export function DefaultFilterForColumnNumber({
 }
 DefaultFilterForColumnNumber.propTypes = {
   column: PropTypes.shape({
-    filterValue: PropTypes.string,
+    filterValue: PropTypes.shape({
+      from: PropTypes.number,
+      to: PropTypes.number,
+    }),
     setFilter: PropTypes.func,
   }),
 };

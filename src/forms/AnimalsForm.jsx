@@ -47,8 +47,8 @@ export default function AnimalsForm({
           type="number"
         />
         <MyInput
-          label="Date: "
-          name="date"
+          label="Birthdate: "
+          name="Birthdate"
           type="date"
         />
         <PeopleSelect
@@ -71,7 +71,7 @@ AnimalsForm.defaultProps = {
   initialData: {
     dogName: '',
     height: 1,
-    date: '2022-08-03',
+    birthDate: '2022-08-03',
     ownerId: null,
   },
   statusOfDisable: false,
@@ -79,7 +79,7 @@ AnimalsForm.defaultProps = {
 
 AnimalsForm.propTypes = {
   initialData: PropTypes.shape({
-    date: PropTypes.string.isRequired,
+    birthDate: PropTypes.string.isRequired,
     dogName: PropTypes.string.isRequired,
     height: PropTypes.number.isRequired,
     idKey: PropTypes.string,
