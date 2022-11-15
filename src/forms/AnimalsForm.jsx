@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { MyInput, PeopleSelect } from '../components/form/customFormikComponents';
+import { MyDateInput, MyInput, PeopleSelect } from '../components/form/customFormikComponents';
 import './Form.css';
 
 export default function AnimalsForm({
@@ -46,9 +46,9 @@ export default function AnimalsForm({
           name="height"
           type="number"
         />
-        <MyInput
+        <MyDateInput
           label="Birthdate: "
-          name="Birthdate"
+          name="birthDate"
           type="date"
         />
         <PeopleSelect

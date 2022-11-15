@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import TableWithRT from 'table/v2/TableWithRT';
 import { useCustomButton } from 'utils/hooks';
 import {
+  DefaultFilterForColumnDate,
   DefaultFilterForColumnNumber,
   DefaultFilterForColumnString,
 } from 'table/v2/FiltersForRT';
@@ -21,6 +22,7 @@ import { setAnimalChecked } from 'store/animals/checked';
 import { addAnimalV2 } from 'store/animals/actions/add';
 import { changeAnimalV2 } from 'store/animals/actions/change';
 import { deleteAnimalV2 } from 'store/animals/actions/delete';
+import { convertToDateUI } from '../../utils/convertDate';
 
 const mapStateToProps = ({ animals }) => ({
   data: animals.result.data,
@@ -54,17 +56,6 @@ const columns = [
     ),
   },
   {
-    Header: 'Age',
-    accessor: 'age',
-    Filter: DefaultFilterForColumnNumber,
-    // eslint-disable-next-line react/prop-types
-    Cell: ({ value }) => (
-      <div className="text-cell-center">
-        {value}
-      </div>
-    ),
-  },
-  {
     Header: 'Height',
     accessor: 'height',
     Filter: DefaultFilterForColumnNumber,
@@ -75,6 +66,17 @@ const columns = [
           'ru-RU',
           { style: 'decimal', maximumFractionDigits: 2, minimumFractionDigits: 2 },
         ).format(value)}
+      </div>
+    ),
+  },
+  {
+    Header: 'Birthdate',
+    accessor: 'birthDate',
+    Filter: DefaultFilterForColumnDate,
+    // eslint-disable-next-line react/prop-types
+    Cell: ({ value }) => (
+      <div className="text-cell-center">
+        {convertToDateUI(value, 'Europe/Kiev')}
       </div>
     ),
   },
@@ -109,11 +111,6 @@ function AnimalsV2(
     deleteLoading,
   },
 ) {
-  const formattedData = useMemo(
-    () => data.map((el) => ({ ...el, birthDate: new Date(el.birthDate) })),
-    [data],
-  );
-
   const [resetChecked, setResetChecked] = useState();
   const { isShowing: isShowingAddModal, toggle: toggleAddModal } = useModal();
   const { isShowing: isShowingChangeModal, toggle: toggleChangeModal } = useModal();
@@ -172,8 +169,8 @@ function AnimalsV2(
   });
 
   const editAnimal = useMemo(
-    () => formattedData?.find((el) => el.idKey === checked[0]),
-    [formattedData, checked],
+    () => data?.find((el) => el.idKey === checked[0]),
+    [data, checked],
   );
 
   const load = useCallback(onSetAnimalOptionsAndLoad, [onSetAnimalOptionsAndLoad]);
@@ -195,11 +192,7 @@ function AnimalsV2(
           <AnimalsForm
             statusOfDisable={changeLoading}
             onSubmit={onChangeCLick}
-            initialData={editAnimal && {
-              ...editAnimal,
-              birthDate: editAnimal.birthDate.toISOString().substring(0, 10),
-              ownerId: editAnimal.owner?.id ?? null,
-            }}
+            initialData={editAnimal}
           />
         </Modal>
       </div>
@@ -231,7 +224,7 @@ function AnimalsV2(
       <div>
         <TableWithRT
           columns={columns}
-          data={formattedData}
+          data={data}
           fetchData={load}
           loading={loading}
           pageCount={pageCount}

@@ -80,7 +80,7 @@ const columns = [
     ),
   },
   {
-    Header: 'Birth date',
+    Header: 'Birthdate',
     accessor: 'birthDate',
     Filter: DefaultFilterForColumnDate,
     // eslint-disable-next-line react/prop-types

@@ -10,12 +10,10 @@ import { useCustomButton, useData } from 'utils/hooks';
 import { useModal, Modal } from 'components/modal/Modal';
 import '../Pages.css';
 import AnimalsForm from 'forms/AnimalsForm';
+import formatOptions from 'utils/formatOptionsForTableV1';
 
 async function getData(options) {
-  const formattedOptions = {
-    ...options,
-    sorting: options.sorting.map((el) => ({ id: el.key, desc: el.direction === 'desc' })),
-  };
+  const formattedOptions = formatOptions(options);
   const result = await getAnimal(formattedOptions);
   const formattedData = result.resultData
     .map((el) => ({ ...el, birthDate: new Date(el.birthDate) }));
@@ -123,7 +121,7 @@ function Animals() {
         <Table
           data={dataTable}
           nameOfId="idKey"
-          columns={[{ key: 'weight', name: 'Weight', type: 'number' },
+          columns={[
             { key: 'dogName', name: 'Dog name', type: 'string' },
             {
               key: 'height', name: 'Height', type: 'number', format: (cellValue) => new Intl.NumberFormat('ru-RU', { style: 'decimal', maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(cellValue),

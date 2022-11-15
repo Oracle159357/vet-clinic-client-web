@@ -10,15 +10,15 @@ import Table from 'table/v1/Table';
 import { useCustomButton, useData } from 'utils/hooks';
 import { Modal, useModal } from 'components/modal/Modal';
 import PeoplesForm from 'forms/PeoplesForm';
+import formatOptions from 'utils/formatOptionsForTableV1';
 
 async function getData(options) {
-  const formattedOptions = {
-    ...options,
-    sorting: options.sorting.map((el) => ({ id: el.key, desc: el.direction === 'desc' })),
-  };
+  const formattedOptions = formatOptions(options);
+
   const result = await getPeople(formattedOptions);
   const formattedData = result.resultData
     .map((el) => ({ ...el, birthDate: new Date(el.birthDate) }));
+
   return { ...result, resultData: formattedData };
 }
 
@@ -133,6 +133,7 @@ function Peoples() {
           nameOfId="id"
           columns={[
             { key: 'name', name: 'Name', type: 'string' },
+            { key: 'weight', name: 'Weight', type: 'number' },
             {
               key: 'married', name: 'Married', type: 'boolean', format: (cellValue) => (cellValue ? '✔️' : '❌'),
             },
