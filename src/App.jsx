@@ -5,6 +5,7 @@ import Animals from 'pages/v1/Animals';
 import Peoples from 'pages/v1/Peoples';
 import PeoplesV2 from 'pages/v2/PeoplesV2';
 import AnimalsV2 from 'pages/v2/AnimalsV2';
+import UsersV2 from 'pages/v2/UsersV2';
 import Layout from 'components/layout/Layout';
 import store from 'store';
 
@@ -22,6 +23,7 @@ function PeopleAndAnimalsTableV2() {
       <Provider store={store}>
         <PeoplesV2 />
         <AnimalsV2 />
+        <UsersV2 />
       </Provider>
     </div>
   );

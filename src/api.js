@@ -38,12 +38,20 @@ export async function getAnimal(options) {
   return apiCall('/animal', { data: options });
 }
 
+export async function getUser(options) {
+  return apiCall('/user', { data: options });
+}
+
 export async function addNewPeople(newPeople) {
   return apiCall('/people/add', { data: newPeople });
 }
 
 export async function addNewAnimal(newAnimal) {
   return apiCall('/animal/add', { data: newAnimal });
+}
+
+export async function addNewUser(newUser) {
+  return apiCall('/user/add', { data: newUser });
 }
 
 export async function updatePeople(people) {
@@ -54,12 +62,20 @@ export async function updateAnimal(animal) {
   return apiCall('/animal/update', { data: animal });
 }
 
+export async function updateUser(user) {
+  return apiCall('/user/update', { data: user });
+}
+
 export async function deletePeople(ids) {
   return apiCall('/people/remove', { data: ids });
 }
 
 export async function deleteAnimal(ids) {
   return apiCall('/animal/delete', { data: ids });
+}
+
+export async function deactivateUser(ids) {
+  return apiCall('/user/deactivate', { data: ids });
 }
 
 export async function loadListOfPeople() {
