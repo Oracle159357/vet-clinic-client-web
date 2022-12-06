@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { MyCheckbox, MyInput } from '../components/form/customFormikComponents';
+import { MyCheckbox, MyInput, MyPasswordInput } from '../components/form/customFormikComponents';
 import './Form.css';
 
 export default function UsersForm({
@@ -36,10 +36,10 @@ export default function UsersForm({
           name="username"
           type="text"
         />
-        <MyInput
+        <MyPasswordInput
           label="Password: "
           name="password"
-          type="text"
+          type="password"
         />
         <MyCheckbox
           name="isAdmin"

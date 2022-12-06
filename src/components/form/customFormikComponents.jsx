@@ -34,7 +34,8 @@ FieldErrors.propTypes = {
   name: PropTypes.string.isRequired,
 };
 
-export function MyInput({ label, ...props }) {
+// eslint-disable-next-line react/prop-types
+export function MyInput({ label, turnOffTransfer, ...props }) {
   const [field] = useField(props);
   return (
     <>
@@ -42,8 +43,30 @@ export function MyInput({ label, ...props }) {
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <input className="text-input" {...field} {...props} />
       <FieldErrors name={props.name} />
-      <br />
+      {turnOffTransfer ? null : (<br />)}
     </>
+  );
+}
+
+export function MyPasswordInput(props) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <span>
+      <MyInput
+        {...props}
+        type={showPassword ? 'text' : 'password'}
+        turnOffTransfer
+      />
+      <label htmlFor="showPassword">
+        <input
+          type="checkbox"
+          onClick={() => setShowPassword(!showPassword)}
+          name="showPassword"
+        />
+        Show password
+      </label>
+    </span>
   );
 }
 
@@ -67,6 +90,12 @@ export function MyDateInput(props) {
 MyInput.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  turnOffTransfer: PropTypes.bool,
+};
+
+MyInput.defaultProps = {
+  turnOffTransfer: false,
 };
 
 export function MyCheckbox({ children, ...props }) {
