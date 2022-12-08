@@ -54,17 +54,6 @@ const columns = [
     ),
   },
   {
-    Header: 'Password',
-    accessor: 'password',
-    Filter: DefaultFilterForColumnString,
-    // eslint-disable-next-line react/prop-types
-    Cell: ({ value }) => (
-      <div className="text-cell-center">
-        {value}
-      </div>
-    ),
-  },
-  {
     Header: 'IsAdmin',
     accessor: 'isAdmin',
     Filter: DefaultFilterForColumnBoolean,
@@ -176,7 +165,11 @@ function UsersV2(
           hide={toggleAddModal}
           name="ADD NEW USER"
         >
-          <UsersForm onSubmit={onAddClick} statusOfDisable={addLoading} />
+          <UsersForm
+            onSubmit={onAddClick}
+            statusOfDisable={addLoading}
+            isNew
+          />
         </Modal>
         <Modal
           isShowing={isShowingChangeModal}
@@ -187,6 +180,7 @@ function UsersV2(
             statusOfDisable={changeLoading}
             onSubmit={onChangeCLick}
             initialData={editUser}
+            isNew={false}
           />
         </Modal>
       </div>

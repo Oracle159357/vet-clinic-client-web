@@ -35,7 +35,7 @@ FieldErrors.propTypes = {
 };
 
 // eslint-disable-next-line react/prop-types
-export function MyInput({ label, turnOffTransfer, ...props }) {
+export function MyInput({ label, enableLineBreak, ...props }) {
   const [field] = useField(props);
   return (
     <>
@@ -43,20 +43,41 @@ export function MyInput({ label, turnOffTransfer, ...props }) {
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <input className="text-input" {...field} {...props} />
       <FieldErrors name={props.name} />
-      {turnOffTransfer ? null : (<br />)}
+      {enableLineBreak ? (<br />) : null}
     </>
   );
 }
 
+MyInput.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  enableLineBreak: PropTypes.bool,
+};
+
+MyInput.defaultProps = {
+  enableLineBreak: true,
+};
+
 export function MyPasswordInput(props) {
+  const [field, , helper] = useField({ ...props });
+
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <span>
       <MyInput
         {...props}
+        value={field.value === null ? '' : field.value}
+        onChange={(event) => {
+          if (event.target.value === '') {
+            helper.setValue(null);
+          } else {
+            field.onChange(event);
+          }
+        }}
         type={showPassword ? 'text' : 'password'}
-        turnOffTransfer
+        enableLineBreak={false}
       />
       <label htmlFor="showPassword">
         <input
@@ -87,19 +108,9 @@ export function MyDateInput(props) {
   );
 }
 
-MyInput.propTypes = {
-  label: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  turnOffTransfer: PropTypes.bool,
-};
-
-MyInput.defaultProps = {
-  turnOffTransfer: false,
-};
-
 export function MyCheckbox({ children, ...props }) {
   const [field] = useField({ ...props, type: 'checkbox' });
+
   return (
     <div>
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -116,6 +127,7 @@ export function MyCheckbox({ children, ...props }) {
 
 export function MySelect({ label, isLoading, ...props }) {
   const [field, , helper] = useField({ ...props });
+
   return (
     <div>
       <label htmlFor={props.name}>{label}</label>
