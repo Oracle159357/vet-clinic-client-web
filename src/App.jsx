@@ -8,6 +8,7 @@ import AnimalsV2 from 'pages/v2/AnimalsV2';
 import UsersV2 from 'pages/v2/UsersV2';
 import Layout from 'components/layout/Layout';
 import store from 'store';
+import Login from './pages/Login';
 
 function PeopleAndAnimalsTableV1() {
   return (
@@ -20,25 +21,24 @@ function PeopleAndAnimalsTableV1() {
 function PeopleAndAnimalsTableV2() {
   return (
     <div>
-      <Provider store={store}>
-        <PeoplesV2 />
-        <AnimalsV2 />
-        <UsersV2 />
-      </Provider>
+      <PeoplesV2 />
+      <AnimalsV2 />
+      <UsersV2 />
     </div>
   );
 }
 
 function App() {
   return (
-    <div>
+    <Provider store={store}>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<PeopleAndAnimalsTableV1 />} />
           <Route path="/TableWithRT" element={<PeopleAndAnimalsTableV2 />} />
+          <Route path="/login" element={<Login />} />
         </Route>
       </Routes>
-    </div>
+    </Provider>
   );
 }
 

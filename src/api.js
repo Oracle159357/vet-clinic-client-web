@@ -78,6 +78,10 @@ export async function deactivateUser(ids) {
   return apiCall('/user/deactivate', { data: ids });
 }
 
+export async function loginUser(username, password) {
+  return apiCall('/user/login', { data: { username, password } });
+}
+
 export async function loadListOfPeople() {
   const { resultData } = await getPeople();
   return resultData.map((people) => _.pick(people, ['id', 'name']));
