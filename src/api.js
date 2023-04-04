@@ -10,10 +10,12 @@ class CustomError extends Error {
 
 const apiCall = async (url, { data }) => {
   const fullUrl = new URL(url, 'http://localhost:3000');
+  const accessToken = localStorage.getItem('accessToken');
   const response = await fetch(fullUrl.href, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: accessToken !== null ? `Bearer ${accessToken}` : '',
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
   });
