@@ -7,6 +7,8 @@ export const login = createAsyncThunk(
     try {
       const data = await loginUser(username, password);
 
+      localStorage.setItem('accessToken', data.token);
+
       return { token: data.token };
     } catch (error) {
       return rejectWithValue(error.payload);
