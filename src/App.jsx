@@ -8,7 +8,8 @@ import AnimalsV2 from 'pages/v2/AnimalsV2';
 import UsersV2 from 'pages/v2/UsersV2';
 import Layout from 'components/layout/Layout';
 import store from 'store';
-import Login from './pages/Login';
+import Login from 'pages/Login';
+import Protected from 'components/auth/Protected';
 
 function PeopleAndAnimalsTableV1() {
   return (
@@ -34,7 +35,16 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<PeopleAndAnimalsTableV1 />} />
-          <Route path="/TableWithRT" element={<PeopleAndAnimalsTableV2 />} />
+          <Route
+            path="/TableWithRT"
+            element={
+              (
+                <Protected>
+                  <PeopleAndAnimalsTableV2 />
+                </Protected>
+              )
+          }
+          />
           <Route path="/login" element={<Login />} />
         </Route>
       </Routes>
