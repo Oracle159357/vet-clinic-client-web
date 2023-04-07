@@ -22,6 +22,9 @@ const apiCall = async (url, { data }) => {
   if (response.status >= 500) {
     throw new Error(await response.text());
   }
+  if (response.status === 401) {
+    window.location = '/login';
+  }
   const result = await response.json();
   if (response.status >= 200 && response.status < 300) {
     return result;
