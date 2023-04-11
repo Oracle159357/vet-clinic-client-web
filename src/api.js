@@ -84,7 +84,7 @@ export async function deactivateUser(ids) {
 }
 
 export async function loginUser(username, password) {
-  return apiCall('/user/login', { data: { username, password } });
+  return apiCall('/auth/login', { data: { username, password } });
 }
 
 export async function loadListOfPeople() {
