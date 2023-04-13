@@ -32,6 +32,10 @@ const apiCall = async (url, { data }) => {
   if (response.status === 400) {
     throw new CustomError(result);
   }
+  if (response.status === 403) {
+    alert('Access to this functionality is denied');
+    throw new CustomError(result);
+  }
   throw new Error('Unsupported status');
 };
 
