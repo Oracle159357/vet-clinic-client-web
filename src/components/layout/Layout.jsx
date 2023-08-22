@@ -8,10 +8,10 @@ function Layout() {
       <div className="menu">
         <ul>
           <li>
-            <Link to="/">My Custom Table + api</Link>
+            <Link to="/TableWithRT">React Table + api</Link>
           </li>
           <li>
-            <Link to="/TableWithRT">React Table + api</Link>
+            <Link to="/TableWithNoRT">My Custom Table + api</Link>
           </li>
         </ul>
       </div>

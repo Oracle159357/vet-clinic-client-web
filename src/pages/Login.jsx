@@ -41,6 +41,8 @@ function Login(
         onSubmit={onLoginClick}
         statusOfDisable={loginLoading}
       />
+      <div>Default user: TestUser</div>
+      <div>Default password: testUserPassword</div>
     </div>
   );
 }

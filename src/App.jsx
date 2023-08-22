@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import Animals from 'pages/v1/Animals';
 import Peoples from 'pages/v1/Peoples';
@@ -34,9 +34,19 @@ function App() {
     <Provider store={store}>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="/" element={<PeopleAndAnimalsTableV1 />} />
+          <Route index element={<Navigate to="/TableWithRT" />} />
           <Route
-            path="/TableWithRT"
+            path="TableWithNoRT"
+            element={
+              (
+                <Protected>
+                  <PeopleAndAnimalsTableV1 />
+                </Protected>
+              )
+          }
+          />
+          <Route
+            path="TableWithRT"
             element={
               (
                 <Protected>
@@ -46,6 +56,7 @@ function App() {
           }
           />
           <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Navigate to="/TableWithRT" replace />} />
         </Route>
       </Routes>
     </Provider>
